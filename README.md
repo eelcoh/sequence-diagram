@@ -5,7 +5,7 @@ This library is about creating Sequence Diagrams, with the main purpose of them 
 ## Example
 The examples directory has a single example.
 
-If you don't have Elm installed yet, go to [elm-lang.org] first.
+If you don't have Elm installed yet, go to [elm-lang.org](http://elm-lang.org/) first.
 
 Clone this repository, and cd into the sequence-diagram directory. Install the dependencies:
 ```
