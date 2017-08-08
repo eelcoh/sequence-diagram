@@ -5,7 +5,7 @@ module Diagram.Compile.Session
 
 import Diagram.Lifeline as Lifeline
 import Diagram.Compile.Types exposing (SessionPassTwo(..))
-import Diagram.Types exposing (Config, Hash, Horizontal, Overlap(..), Session, Session(..), SessionDetails, Range(..), Show(..), Vertical, Y(..))
+import Diagram.Types exposing (Config, Hash, Horizontal, Overlap(..), Identifier(..), Session, Sessions(..), Session(..), SessionDetails, Range(..), Show(..), Vertical, Y(..))
 import Diagram.X as X
 import Diagram.Y as Y
 import Murmur3
@@ -36,10 +36,10 @@ toSession (SessionPassTwo attrs horizontal vertical ( incoming, outgoing ) sessi
                 ]
 
         stringsAndSessions =
-            List.map toSession sessionsPT
+            toSessions detailsString sessionsPT
 
         sessionsString =
-            String.concat (List.map Tuple.first stringsAndSessions)
+            Tuple.first stringsAndSessions
 
         sessionString =
             (detailsString ++ sessionsString)
@@ -47,9 +47,30 @@ toSession (SessionPassTwo attrs horizontal vertical ( incoming, outgoing ) sessi
         sessionId =
             Murmur3.hashString 24743 sessionString
     in
-        List.map Tuple.second stringsAndSessions
+        Tuple.second stringsAndSessions
             |> Session sessionId attrs Hidden details ( incoming, outgoing )
             |> (,) sessionString
+
+
+toSessions : String -> Sessions (List SessionPassTwo) -> ( String, Sessions (List Session) )
+toSessions detailsString sessions =
+    case sessions of
+        Refer (Identifier i) ->
+            let
+                sessionsString =
+                    String.join " / " [ "refer", "identifier", i, detailsString ]
+            in
+                ( sessionsString, Refer (Identifier i) )
+
+        Sessions s ->
+            listToSessions s
+
+
+listToSessions : List SessionPassTwo -> ( String, Sessions (List Session) )
+listToSessions sessions =
+    List.map toSession sessions
+        |> List.unzip
+        |> (\( a, b ) -> ( (String.join " / " a), Sessions b ))
 
 
 toSessionDetails : Horizontal -> Vertical -> SessionDetails

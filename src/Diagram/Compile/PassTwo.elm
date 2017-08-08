@@ -6,7 +6,7 @@ module Diagram.Compile.PassTwo
 import Diagram.Compile.Arrow as Arrow
 import Diagram.Layer exposing (registerSession)
 import Diagram.Compile.Types exposing (..)
-import Diagram.Types exposing (Arrow, Attribute, ArrowType(..), Coordinate, Diagram, Direction(..), Range(..), Horizontal, LayerIdx, Lifeline, LifelineIdx, Vertical, X(..), Y)
+import Diagram.Types exposing (Arrow, Attribute, ArrowType(..), Coordinate, Diagram, Direction(..), Range(..), Horizontal, LayerIdx, Lifeline, LifelineIdx, Sessions(..), Vertical, X(..), Y)
 
 
 pass : Maybe Horizontal -> Maybe Vertical -> List Lifeline -> SessionPassOne -> ( SessionPassTwo, List Lifeline )
@@ -49,7 +49,7 @@ pass mHorizontalFrom mVerticalFrom lifelines (SessionPassOne attrs lifeline vert
                     sessionsPassTwo attrs (Just horizontal) (Just vertical) newLifelines steps
 
                 Nothing ->
-                    ( [], lifelines )
+                    ( Sessions [], lifelines )
 
         session =
             SessionPassTwo attrs horizontal vertical newArrows newSteps
@@ -57,8 +57,22 @@ pass mHorizontalFrom mVerticalFrom lifelines (SessionPassOne attrs lifeline vert
         ( session, newNwLifelines )
 
 
-sessionsPassTwo : List Attribute -> Maybe Horizontal -> Maybe Vertical -> List Lifeline -> List SessionPassOne -> ( List SessionPassTwo, List Lifeline )
+sessionsPassTwo : List Attribute -> Maybe Horizontal -> Maybe Vertical -> List Lifeline -> Sessions (List SessionPassOne) -> ( Sessions (List SessionPassTwo), List Lifeline )
 sessionsPassTwo attributes mFromHorizontal mFromVertical lifelines steps =
+    case steps of
+        Refer i ->
+            ( Refer i, lifelines )
+
+        Sessions l ->
+            let
+                ( nwSessions, nwLifelines ) =
+                    sessionsPassTwoList attributes mFromHorizontal mFromVertical lifelines l
+            in
+                ( (Sessions nwSessions), nwLifelines )
+
+
+sessionsPassTwoList : List Attribute -> Maybe Horizontal -> Maybe Vertical -> List Lifeline -> List SessionPassOne -> ( List SessionPassTwo, List Lifeline )
+sessionsPassTwoList attributes mFromHorizontal mFromVertical lifelines steps =
     case steps of
         [] ->
             ( [], lifelines )
@@ -69,7 +83,7 @@ sessionsPassTwo attributes mFromHorizontal mFromVertical lifelines steps =
                     pass mFromHorizontal mFromVertical lifelines session
 
                 ( nwSessions, nwNwLifelines ) =
-                    sessionsPassTwo attributes mFromHorizontal mFromVertical nwLifelines rest
+                    sessionsPassTwoList attributes mFromHorizontal mFromVertical nwLifelines rest
             in
                 ( (nwSession :: nwSessions), nwNwLifelines )
 

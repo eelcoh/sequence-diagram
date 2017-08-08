@@ -1,15 +1,15 @@
 module Main exposing (..)
 
-import Sequence exposing (sequence, sync, async)
-import Diagram exposing (first, next, prev, rewind, full, Diagram)
-import Participant exposing (person, system)
-import Diagram.Attribute exposing (backgroundColour, textColour, caption, return)
 import Color
-import Keyboard
-import Navigation
-import Window
+import Diagram exposing (Diagram, Errors, first, full, next, prev, rewind)
+import Diagram.Attribute exposing (backgroundColour, caption, return, textColour)
 import Dict
 import Html exposing (Html)
+import Keyboard
+import Navigation
+import Participant exposing (person, system)
+import Sequence exposing (async, refSync, sequence, sync)
+import Window
 
 
 {-
@@ -18,7 +18,7 @@ import Html exposing (Html)
 
 
 type alias Model =
-    Diagram
+    Result Errors Diagram
 
 
 type Msg
@@ -36,26 +36,42 @@ update : Msg -> Model -> ( Model, Cmd msg )
 update msg model =
     case msg of
         Start ->
-            ( rewind model, Cmd.none )
+            let
+                diagram =
+                    Result.map rewind model
+            in
+                ( diagram, Cmd.none )
 
         End ->
-            ( full model, Cmd.none )
+            let
+                diagram =
+                    Result.map full model
+            in
+                ( diagram, Cmd.none )
 
         Next ->
-            ( next model, Cmd.none )
+            let
+                diagram =
+                    Result.map next model
+            in
+                ( diagram, Cmd.none )
 
         Previous ->
-            ( prev model, Cmd.none )
+            let
+                diagram =
+                    Result.map prev model
+            in
+                ( diagram, Cmd.none )
 
         NewLocation l ->
             ( model, Cmd.none )
 
         WindowResizes windowSize ->
             let
-                newModel =
-                    Diagram.resize model windowSize
+                diagram =
+                    Result.map (\d -> Diagram.resize d windowSize) model
             in
-                ( newModel, Cmd.none )
+                ( diagram, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
@@ -109,13 +125,13 @@ subscriptions model =
         ]
 
 
-init : Diagram -> Navigation.Location -> ( Model, Cmd Msg )
+init : Result Errors Diagram -> Navigation.Location -> ( Model, Cmd Msg )
 init diagram location =
     let
         model =
             diagram
     in
-        ( (first model), Cmd.none )
+        ( model, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -131,15 +147,34 @@ view model =
                 , Html.li [] [ Html.text "f - for a full view" ]
                 ]
             ]
-        , Diagram.view model
+        , viewDiagram model
         ]
 
 
-app : Diagram -> Program Never Model Msg
-app diagram =
+viewDiagram : Model -> Html Msg
+viewDiagram model =
+    case model of
+        Ok diagram ->
+            Diagram.view diagram
+
+        Err errors ->
+            Html.div []
+                [ Html.h2 [] [ Html.text "Oops" ]
+                , Html.ul []
+                    (List.map viewError errors)
+                ]
+
+
+viewError : String -> Html Msg
+viewError error =
+    Html.li [] [ Html.text error ]
+
+
+app : Result Errors Diagram -> Program Never Model Msg
+app rDiagram =
     Navigation.program
         NewLocation
-        { init = init diagram
+        { init = init rDiagram
         , update = update
         , view = view
         , subscriptions = subscriptions
@@ -177,10 +212,18 @@ main =
                         , sync "api2" [ caption "store" ] []
                         , sync "backend" [ caption "post /this/too" ] []
                         ]
+                    , refSync "seq2" [ caption "REFSYNC" ]
                     ]
                 ]
 
-        diagram =
-            Diagram.create participants seq
+        seq2 =
+            sequence "api1"
+                []
+                [ sync "api2" [ caption "api2 call" ] []
+                , sync "backend" [ caption "backend call" ] []
+                ]
+
+        rDiagram =
+            Diagram.create participants seq [ ( "seq2", seq2 ) ]
     in
-        app diagram
+        app rDiagram

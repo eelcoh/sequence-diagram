@@ -3,13 +3,14 @@ module Sequence
         ( sequence
         , sync
         , async
+        , refSync
         , Sequence
         )
 
 {-| Create a sequence diagram in Elm.
 
 # Sequence buiders
-@docs sequence, sync, async
+@docs sequence, sync, async, refSync
 
 # Data
 @docs Sequence
@@ -50,19 +51,20 @@ async participant attributes steps =
     Asynchronous (Identifier participant) attributes steps
 
 
+{-| refSync: create a synchronous call to referred sequence. This can be used to
+reuse sequences.
 
-{- refSync: create a synchronous call to referred sequence. This can be used to
-   reuse sequences.
-   The referred sequences will not be included directly, but will be used
-   by zooming in.
-   refSync : String -> List Attribute -> Sequence
-   refSync sequenceName attributes =
-       RefSync sequenceName attributes
-
-
-   namedSequence : String -> Sequence -> NamedSequence
-   namedSequence sequenceName sequence =
-       ( sequenceName, sequence )
-
+The referred sequences will not be included directly, but will be used by zooming in.
 -}
+refSync : String -> List Attribute -> Sequence
+refSync sequenceName attributes =
+    RefSync (Identifier sequenceName) attributes
+
+
+namedSequence : String -> Sequence -> NamedSequence
+namedSequence sequenceName sequence =
+    ( sequenceName, sequence )
+
+
+
 --

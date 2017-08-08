@@ -1,9 +1,7 @@
 module Diagram.Types exposing (..)
 
 import Color exposing (Color)
-
-
---import Dict exposing (Dict)
+import Dict exposing (Dict)
 
 
 type alias Model =
@@ -25,19 +23,19 @@ type Sequence
     = Synchronous Identifier (List Attribute) (List Sequence)
     | Asynchronous Identifier (List Attribute) (List Sequence)
     | Sequence Identifier (List Attribute) (List Sequence)
+    | RefSync Identifier (List Attribute)
 
 
-
---    | RefSync Identifier (List Attribute)
-{- }
-
-   type alias NamedSequence =
-       ( String, Sequence )
+type alias NamedSequence =
+    ( String, Sequence )
 
 
-   type alias NamedSequences =
-       Dict.Dict String Sequence
--}
+type alias NamedSequences =
+    Dict.Dict String Sequence
+
+
+type alias Errors =
+    List String
 
 
 {-| Attributes are
@@ -89,7 +87,12 @@ type alias Lifeline =
 
 
 type Session
-    = Session Hash (List Attribute) Show SessionDetails ( Maybe Arrow, Maybe Arrow ) (List Session)
+    = Session Hash (List Attribute) Show SessionDetails ( Maybe Arrow, Maybe Arrow ) (Sessions (List Session))
+
+
+type Sessions a
+    = Sessions a
+    | Refer Identifier
 
 
 type Show

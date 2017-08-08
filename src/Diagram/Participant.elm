@@ -1,8 +1,10 @@
 module Diagram.Participant exposing (..)
 
-import Diagram.Types exposing (..)
-import Diagram.Attribute as Attributes
 import Color
+import Diagram.Attribute as Attributes
+import Diagram.Result
+import Diagram.Types exposing (..)
+import Dict
 
 
 defaultParticipant : Identifier -> Participant
@@ -27,17 +29,41 @@ participant identifier attributeList =
 -- helpers
 
 
-getIdentifiers : Sequence -> List Identifier
-getIdentifiers sequence =
+getIdentifiers : NamedSequences -> Sequence -> Result Errors (List Identifier)
+getIdentifiers namedSequences sequence =
+    getIdentifierResults namedSequences sequence
+        |> Diagram.Result.merge
+
+
+getIdentifierResults : NamedSequences -> Sequence -> List (Result Errors Identifier)
+getIdentifierResults namedSequences sequence =
     case sequence of
         Sequence identifier _ steps ->
-            identifier :: List.concat (List.map getIdentifiers steps)
+            (Ok identifier) :: List.concat (List.map (getIdentifierResults namedSequences) steps)
 
         Synchronous identifier _ steps ->
-            identifier :: List.concat (List.map getIdentifiers steps)
+            (Ok identifier) :: List.concat (List.map (getIdentifierResults namedSequences) steps)
 
         Asynchronous identifier _ steps ->
-            identifier :: List.concat (List.map getIdentifiers steps)
+            (Ok identifier) :: List.concat (List.map (getIdentifierResults namedSequences) steps)
+
+        RefSync (Identifier sequenceName) _ ->
+            let
+                mSeq =
+                    Dict.get sequenceName namedSequences
+            in
+                case mSeq of
+                    Nothing ->
+                        let
+                            error =
+                                "Could not find sequence named "
+                                    ++ sequenceName
+                                    |> List.singleton
+                        in
+                            [ Err error ]
+
+                    Just seq ->
+                        getIdentifierResults namedSequences seq
 
 
 merge : List Participant -> List Identifier -> List Participant
