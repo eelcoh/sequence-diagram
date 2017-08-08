@@ -9,7 +9,8 @@ module Diagram.Session
         )
 
 import Diagram.Arrow as Arrow
-import Diagram.Types exposing (Config, Hash, Horizontal, Overlap(..), Range(..), Session, Session(..), SessionDetails, Show(..), Vertical, Y(..))
+import Diagram.Sessions as Sessions
+import Diagram.Types exposing (Config, Hash, Horizontal, Overlap(..), Range(..), Session, Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
 
 
 first : Session -> Session
@@ -24,17 +25,47 @@ full session =
         |> showThis
 
 
-next : Session -> ( Bool, Session )
-next (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) sessions) =
+next : Session -> Session
+next session =
+    let
+        finish ( c, s ) =
+            let
+                newSession =
+                    case inspectSession session of
+                        AllHidden ->
+                            first s
+
+                        AllVisible ->
+                            hide s
+
+                        Inspected ->
+                            s
+
+                -- reverse back
+            in
+                newSession
+    in
+        next_ session
+            |> finish
+
+
+next_ : Session -> ( Changed, Session )
+next_ (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) sessions) =
     case active of
         Hidden ->
             (Session hash attributes Active sessionDetails ( mArrowIn, mArrowOut ) sessions)
-                |> (,) True
+                |> (,) Activated
 
         Active ->
             let
                 ( activated, newSessions ) =
-                    nextSessions sessions
+                    case sessions of
+                        Sessions sess ->
+                            nextSessions sess
+                                |> \( a, s ) -> ( a, Sessions s )
+
+                        Refer i ->
+                            ( Deactivated, Refer i )
             in
                 (Session hash attributes Visible sessionDetails ( mArrowIn, mArrowOut ) newSessions)
                     |> (,) activated
@@ -42,35 +73,16 @@ next (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) sess
         Visible ->
             let
                 ( activated, newSessions ) =
-                    nextSessions sessions
+                    case sessions of
+                        Sessions sess ->
+                            nextSessions sess
+                                |> \( a, s ) -> ( a, Sessions s )
+
+                        Refer i ->
+                            ( Unchanged, Refer i )
             in
                 (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) newSessions)
                     |> (,) activated
-
-
-nextSessions : List Session -> ( Bool, List Session )
-nextSessions sessions =
-    case sessions of
-        [] ->
-            ( False, sessions )
-
-        x :: xs ->
-            let
-                ( activated, newSession ) =
-                    next x
-            in
-                if activated then
-                    newSession
-                        :: xs
-                        |> (,) activated
-                else
-                    let
-                        ( activatedXs, newNextSessions ) =
-                            nextSessions xs
-                    in
-                        newSession
-                            :: newNextSessions
-                            |> (,) activated
 
 
 type Changed
@@ -78,6 +90,68 @@ type Changed
     | Changed
     | Activated
     | Deactivated
+
+
+nextSessions : List Session -> ( Changed, List Session )
+nextSessions sessions =
+    case sessions of
+        [] ->
+            ( Unchanged, sessions )
+
+        x :: xs ->
+            let
+                ( activated, newSession ) =
+                    next_ x
+            in
+                case activated of
+                    Unchanged ->
+                        let
+                            ( activatedXs, newNextSessions ) =
+                                nextSessions xs
+                        in
+                            newSession
+                                :: newNextSessions
+                                |> (,) activatedXs
+
+                    Changed ->
+                        newSession
+                            :: xs
+                            |> (,) Changed
+
+                    Activated ->
+                        case (getActive x) of
+                            Active ->
+                                newSession
+                                    :: xs
+                                    |> (,) Deactivated
+
+                            _ ->
+                                newSession
+                                    :: xs
+                                    |> (,) Changed
+
+                    Deactivated ->
+                        newSession
+                            :: xs
+                            |> (,) Changed
+
+
+
+{- }
+
+   if activated then
+       newSession
+           :: xs
+           |> (,) activated
+   else
+       let
+           ( activatedXs, newNextSessions ) =
+               nextSessions xs
+       in
+           newSession
+               :: newNextSessions
+               |> (,) activated
+-}
 
 
 prev : Session -> ( Bool, Session )
@@ -128,8 +202,17 @@ previous session =
 
         Visible ->
             let
+                sessions =
+                    (Sessions.get session)
+
                 ( changed, newSessions ) =
-                    prevSessions (getSessions session)
+                    case sessions of
+                        Refer i ->
+                            ( Unchanged, sessions )
+
+                        Sessions sessionList ->
+                            prevSessions sessionList
+                                |> \( a, b ) -> ( a, Sessions b )
             in
                 case changed of
                     Deactivated ->
@@ -188,18 +271,22 @@ activateLast : Session -> Session
 activateLast session =
     let
         ml =
-            getSessions session
-                |> activateLastOfSessions
+            Sessions.get session
 
         h =
             Debug.log "activateLast " (getHash session)
     in
         case ml of
-            Nothing ->
+            Refer i ->
                 activateThis session
 
-            Just newSessions ->
-                setSessions session newSessions
+            Sessions sessions ->
+                case (activateLastOfSessions sessions) of
+                    Nothing ->
+                        activateThis session
+
+                    Just newSessions ->
+                        setSessions session (Sessions newSessions)
 
 
 activateLastOfSessions : List Session -> Maybe (List Session)
@@ -255,9 +342,14 @@ activate hashToShow (Session hash attributes active sessionDetails ( mArrowIn, m
                 List.any identity
 
             ( found, newSessions ) =
-                List.map (activate hashToShow) sessions
-                    |> List.unzip
-                    |> \( a, b ) -> ( any a, b )
+                case sessions of
+                    Sessions sess ->
+                        List.map (activate hashToShow) sess
+                            |> List.unzip
+                            |> \( a, b ) -> ( any a, Sessions b )
+
+                    Refer i ->
+                        ( False, Refer i )
 
             newStatus =
                 if found then
@@ -275,7 +367,7 @@ hide : Session -> Session
 hide (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) sessions) =
     let
         newSessions =
-            List.map hide sessions
+            Sessions.map hide sessions
     in
         (Session hash attributes Hidden sessionDetails ( mArrowIn, mArrowOut ) newSessions)
 
@@ -284,7 +376,7 @@ show : Session -> Session
 show (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) sessions) =
     let
         newSessions =
-            List.map full sessions
+            Sessions.map full sessions
     in
         (Session hash attributes Visible sessionDetails ( mArrowIn, mArrowOut ) newSessions)
 
@@ -299,12 +391,7 @@ getActive (Session _ _ show _ _ _) =
     show
 
 
-getSessions : Session -> List Session
-getSessions (Session _ _ _ _ _ sessions) =
-    sessions
-
-
-setSessions : Session -> List Session -> Session
+setSessions : Session -> Sessions (List Session) -> Session
 setSessions (Session hash attributes active sessionDetails arrows _) sessions =
     Session hash attributes active sessionDetails arrows sessions
 
@@ -317,19 +404,24 @@ max (Session _ _ _ { end } ( _, arrowOut ) sessions) =
                 |> Maybe.withDefault 0
                 |> Basics.max end
     in
-        List.map max sessions
-            |> (::) thisMax
-            |> List.maximum
-            |> Maybe.withDefault 0
+        case sessions of
+            Sessions sessionList ->
+                List.map max sessionList
+                    |> (::) thisMax
+                    |> List.maximum
+                    |> Maybe.withDefault 0
+
+            Refer _ ->
+                1
 
 
 mirror : Session -> Session
 mirror session =
     let
         sessions =
-            getSessions session
-                |> List.reverse
-                |> List.map mirror
+            Sessions.get session
+                |> Sessions.reverse
+                |> Sessions.map mirror
     in
         setSessions session sessions
 
@@ -384,15 +476,20 @@ inspectSession session =
             Inspected
 
 
-getAllActives : List Session -> List Show
+getAllActives : Sessions (List Session) -> List Show
 getAllActives sessions =
-    List.map getAllActive sessions
-        |> List.concat
+    case sessions of
+        Refer i ->
+            []
+
+        Sessions sessionList ->
+            List.map getAllActive sessionList
+                |> List.concat
 
 
 getAllActive : Session -> List Show
 getAllActive session =
-    (getActive session) :: (getAllActives (getSessions session))
+    (getActive session) :: (getAllActives (Sessions.get session))
 
 
 

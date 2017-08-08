@@ -7,9 +7,10 @@ import Diagram.Attribute.Internal as Attributes
 import Diagram.Render.Arrow as Arrow
 import Diagram.Render.Colour as Colour
 import Diagram.Render.Config as Config
-import Diagram.Types exposing (Config, Hash, Horizontal, Overlap(..), Range(..), Session, Session(..), SessionDetails, Show(..), Vertical, Y(..))
+import Diagram.Types exposing (Config, Hash, Horizontal, Overlap(..), Range(..), Sessions(..), Session(..), SessionDetails, Show(..), Vertical, Y(..))
 import Svg exposing (Svg)
 import Svg.Attributes as SvgA
+import Diagram.Sessions as Sessions
 
 
 -- view
@@ -22,7 +23,12 @@ view config session =
             viewSession config session
 
         vSessions =
-            List.map (view config) (sessions session)
+            case (Sessions.get session) of
+                Refer i ->
+                    []
+
+                Sessions sessions ->
+                    List.map (view config) sessions
     in
         Svg.g []
             (vThis ++ vSessions)
@@ -90,8 +96,3 @@ viewSession config (Session hash attributes active model ( mArrowIn, mArrowOut )
             List.filterMap identity [ vArrowIn, vArrowOut ]
     in
         (Svg.rect attrs []) :: arrows
-
-
-sessions : Session -> List Session
-sessions (Session _ _ _ _ _ sessions) =
-    sessions

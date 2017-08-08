@@ -14,11 +14,11 @@ import Diagram.Types exposing (..)
 
 
 type SessionPassOne
-    = SessionPassOne (List Attribute) LifelineIdx Vertical Arrows (List SessionPassOne)
+    = SessionPassOne (List Attribute) LifelineIdx Vertical Arrows (Sessions (List SessionPassOne))
 
 
 type SessionPassTwo
-    = SessionPassTwo (List Attribute) Horizontal Vertical ( Maybe Arrow, Maybe Arrow ) (List SessionPassTwo)
+    = SessionPassTwo (List Attribute) Horizontal Vertical ( Maybe Arrow, Maybe Arrow ) (Sessions (List SessionPassTwo))
 
 
 type alias ArrowMeta =

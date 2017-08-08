@@ -9,6 +9,7 @@ module Diagram
         , create
         , resize
         , Diagram
+        , Errors
         )
 
 {-| Create a sequence diagram in Elm.
@@ -24,7 +25,7 @@ module Diagram
 @docs view, resize
 
 # Data
-@docs Diagram
+@docs Diagram, Errors
 
 -}
 
@@ -35,7 +36,7 @@ import Diagram.Render.Config as Config
 import Diagram.Render.Lifeline as Lifeline
 import Diagram.Render.Session as RSession
 import Diagram.Session as Session
-import Diagram.Types exposing (Model, Participant, Sequence, Size)
+import Diagram.Types as Types exposing (Model, Participant, Sequence, Size, NamedSequences)
 import Dict
 import List exposing (all)
 import Maybe.Extra
@@ -49,42 +50,31 @@ type alias Diagram =
     Model
 
 
+{-| List of Strings
+-}
+type alias Errors =
+    Types.Errors
+
+
 {-|
   Initialise the diagram.
 -}
-create : List Participant -> Sequence -> Model
-create participants sequence =
+create : List Participant -> Sequence -> List ( String, Sequence ) -> Result Errors Model
+create participants sequence named =
     let
-        {-
-           namedSequences =
-               Dict.fromList named
+        namedSequences =
+            Dict.fromList named
 
-           namedSequenceParticipants =
-               List.map Tuple.second named
-                   |> List.map Participant.getIdentifiers
-                   |> List.concat
+        rCompiled =
+            Participant.getIdentifiers namedSequences sequence
+                |> Result.map (Participant.merge participants)
+                |> Result.map (List.indexedMap (,))
+                |> Result.andThen (\p -> compile p sequence namedSequences)
 
-           allParticipants =
-               Participant.merge (Participant.getIdentifiers sequence) namedSequenceParticipants
-                   |> Participant.merge participants
-                   |> List.indexedMap (,)
-        -}
-        allParticipants =
-            Participant.merge participants (Participant.getIdentifiers sequence)
-                |> List.indexedMap (,)
-
-        mCompiled =
-            compile allParticipants sequence
-
-        model =
-            case mCompiled of
-                Just ( lifelines, session ) ->
-                    Model.create lifelines (Just session) (Config.default)
-
-                Nothing ->
-                    Model.empty (Config.default)
+        createModel ( lifelines, session ) =
+            Model.create lifelines (Just session) (Config.default)
     in
-        first model
+        Result.map createModel rCompiled
 
 
 {-|
@@ -128,7 +118,6 @@ next model =
     let
         newSession =
             Maybe.map Session.next model.session
-                |> Maybe.map Tuple.second
     in
         { model | session = newSession }
 
