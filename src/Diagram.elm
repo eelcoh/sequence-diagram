@@ -5,6 +5,8 @@ module Diagram
         , prev
         , rewind
         , full
+        , zoom
+        , zoomOut
         , view
         , create
         , resize
@@ -19,7 +21,7 @@ module Diagram
 @docs create
 
 # Navigate the diagram
-@docs first, next, prev, rewind, full
+@docs first, next, prev, rewind, full, zoom, zoomOut
 
 # Create the SVG
 @docs view, resize
@@ -37,7 +39,7 @@ import Diagram.Render.Lifeline as Lifeline
 import Diagram.Render.Session as RSession
 import Diagram.Session as Session
 import Diagram.Data as Data
-import Diagram.Types as Types exposing (Data, Session, Model, Participant, Sequence, Size, NamedSequences)
+import Diagram.Types as Types exposing (Data, Session, Model, Identifier(..), Participant, Sequence, Size, NamedSequences)
 import Dict
 import List exposing (all)
 import Maybe.Extra
@@ -131,6 +133,57 @@ next model =
     move Session.next model
 
 
+{-|
+  Set the full diagram visible
+-}
+full : Model -> Model
+full model =
+    move Session.full model
+
+
+{-|
+  Zoom into the referred sequence.
+-}
+zoom : Model -> Model
+zoom model =
+    let
+        current =
+            model.diagram
+
+        mData =
+            Session.getZoom current.session
+                |> Maybe.map (\(Identifier i) -> i)
+                |> Maybe.andThen (\i -> Dict.get i model.sessionTable)
+    in
+        case mData of
+            Nothing ->
+                model
+
+            Just d ->
+                let
+                    newDiagram =
+                        d
+
+                    newStack =
+                        model.diagram :: model.stack
+                in
+                    { model | diagram = newDiagram, stack = newStack }
+                        |> full
+
+
+{-|
+  Zoom out of the referred sequence.
+-}
+zoomOut : Model -> Model
+zoomOut model =
+    case model.stack of
+        a :: xs ->
+            { model | diagram = a, stack = xs }
+
+        _ ->
+            model
+
+
 
 {- generic function
    takes a move function, and then creates a new model
@@ -150,14 +203,6 @@ move fn model =
             { current | session = newSession }
     in
         { model | diagram = newDiagram }
-
-
-{-|
-  Set the full diagram visible
--}
-full : Model -> Model
-full model =
-    move Session.full model
 
 
 {-|

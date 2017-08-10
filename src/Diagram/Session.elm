@@ -6,11 +6,13 @@ module Diagram.Session
         , first
         , full
         , max
+        , getZoom
         )
 
 import Diagram.Arrow as Arrow
 import Diagram.Sessions as Sessions
-import Diagram.Types exposing (Config, Hash, Horizontal, Overlap(..), Range(..), Session, Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
+import Diagram.Types exposing (Config, Hash, Identifier(..), Horizontal, Identifier, Overlap(..), Range(..), Sessions(Refer), Session, Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
+import Maybe.Extra as MaybeX
 
 
 first : Session -> Session
@@ -470,6 +472,23 @@ getAllActives sessions =
 getAllActive : Session -> List Show
 getAllActive session =
     (getActive session) :: (getAllActives (Sessions.get session))
+
+
+getZoom : Session -> Maybe Identifier
+getZoom session =
+    case session of
+        Session _ _ Active _ _ (Refer i) ->
+            Just i
+
+        Session _ _ Active _ _ (Sessions _) ->
+            Nothing
+
+        Session _ _ _ _ _ (Refer _) ->
+            Nothing
+
+        Session _ _ _ _ _ (Sessions sessions) ->
+            List.map getZoom sessions
+                |> List.foldr MaybeX.or Nothing
 
 
 
