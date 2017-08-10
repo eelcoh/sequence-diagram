@@ -5,9 +5,16 @@ import Dict exposing (Dict)
 
 
 type alias Model =
-    { lifelines : List Lifeline
-    , session : Maybe Session
+    { stack : List Data
+    , diagram : Data
+    , sessionTable : SessionTable
     , config : Config
+    }
+
+
+type alias Data =
+    { lifelines : List Lifeline
+    , session : Session
     }
 
 
@@ -32,6 +39,10 @@ type alias NamedSequence =
 
 type alias NamedSequences =
     Dict.Dict String Sequence
+
+
+type alias SessionTable =
+    Dict.Dict String Data
 
 
 type alias Errors =
@@ -64,13 +75,13 @@ type alias Config =
     }
 
 
-type alias Diagram =
-    { lifelines : List Lifeline
-    , sessions : List Session
-    }
 
-
-
+{-
+   type alias Diagram =
+       { lifelines : List Lifeline
+       , sessions : List Session
+       }
+-}
 --module Sequence.Types exposing (..)
 {- }
 

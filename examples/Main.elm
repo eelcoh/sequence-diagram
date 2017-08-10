@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Color
-import Diagram exposing (Diagram, Errors, first, full, next, prev, rewind)
+import Diagram exposing (Diagram, Errors, first, full, next, prev, rewind, zoom, zoomOut)
 import Diagram.Attribute exposing (backgroundColour, caption, return, textColour)
 import Dict
 import Html exposing (Html)
@@ -10,11 +10,6 @@ import Navigation
 import Participant exposing (person, system)
 import Sequence exposing (async, refSync, sequence, sync)
 import Window
-
-
-{-
-   App
--}
 
 
 type alias Model =
@@ -26,7 +21,8 @@ type Msg
     | Next
     | Previous
     | End
-      --    | Select Hash
+    | Zoom
+    | ZoomOut
     | NewLocation Navigation.Location
     | WindowResizes Window.Size
     | NoOp
@@ -60,6 +56,20 @@ update msg model =
             let
                 diagram =
                     Result.map prev model
+            in
+                ( diagram, Cmd.none )
+
+        Zoom ->
+            let
+                diagram =
+                    Result.map zoom model
+            in
+                ( diagram, Cmd.none )
+
+        ZoomOut ->
+            let
+                diagram =
+                    Result.map zoomOut model
             in
                 ( diagram, Cmd.none )
 
@@ -108,6 +118,12 @@ keyCodes =
           -- p
         , ( 72, Previous )
           -- h
+        , ( 90, Zoom )
+          -- z
+        , ( 27, ZoomOut )
+          -- Escape
+        , ( 79, ZoomOut )
+          -- o
         ]
 
 
@@ -145,6 +161,8 @@ view model =
                 , Html.li [] [ Html.text "n - for the next next" ]
                 , Html.li [] [ Html.text "p - for a step back" ]
                 , Html.li [] [ Html.text "f - for a full view" ]
+                , Html.li [] [ Html.text "z - to zoom into a referred sequence" ]
+                , Html.li [] [ Html.text "o or Escape - to zoom out of a referred sequence" ]
                 ]
             ]
         , viewDiagram model
