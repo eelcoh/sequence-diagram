@@ -6,7 +6,7 @@ module Diagram.Compile.PassTwo
 import Diagram.Compile.Arrow as Arrow
 import Diagram.Layer exposing (registerSession)
 import Diagram.Compile.Types exposing (..)
-import Diagram.Types exposing (Arrow, Attribute, ArrowType(..), Coordinate, Diagram, Direction(..), Range(..), Horizontal, LayerIdx, Lifeline, LifelineIdx, Sessions(..), Vertical, X(..), Y)
+import Diagram.Types exposing (Arrow, Attribute, ArrowType(..), Coordinate, Direction(..), Range(..), Horizontal, LayerIdx, Lifeline, LifelineIdx, Sessions(..), Vertical, X(..), Y)
 
 
 pass : Maybe Horizontal -> Maybe Vertical -> List Lifeline -> SessionPassOne -> ( SessionPassTwo, List Lifeline )

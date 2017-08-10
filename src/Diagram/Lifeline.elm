@@ -10,7 +10,7 @@ module Diagram.Lifeline
         , lifeline
         )
 
-import Diagram.Types exposing (Diagram, Direction(..), Identifier(..), Lifeline, LifelineIdx, LifelineIdx(..), Participant(..), X(..))
+import Diagram.Types exposing (Direction(..), Identifier(..), Lifeline, LifelineIdx, LifelineIdx(..), Participant(..), X(..))
 import List.Extra as Extra exposing (getAt, setAt)
 
 

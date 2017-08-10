@@ -7,10 +7,6 @@ import Diagram.Compile.Types exposing (..)
 import Diagram.Lifeline as Lifeline exposing (getDirection)
 import Diagram.NamedSequences as Named
 import Diagram.Sequence as Sequence
-
-
--- import Diagram.Session exposing (nextSessions)
-
 import Diagram.Types exposing (..)
 import Diagram.Y as Y
 import List.Extra as Extra

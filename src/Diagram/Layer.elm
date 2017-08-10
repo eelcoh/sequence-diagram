@@ -6,7 +6,7 @@ module Diagram.Layer
 
 import Diagram.Lifeline as Lifeline
 import Diagram.Range as Range
-import Diagram.Types exposing (Diagram, Layer(..), LayerIdx, Lifeline, LifelineIdx(..), Overlap(..), Session(..), Range, X(..))
+import Diagram.Types exposing (Layer(..), LayerIdx, Lifeline, LifelineIdx(..), Overlap(..), Session(..), Range, X(..))
 import Diagram.X as X
 
 

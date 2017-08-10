@@ -1,13 +1,15 @@
 module Diagram.Model exposing (..)
 
-import Diagram.Types exposing (Config, Lifeline, Model, Session)
+import Diagram.Types exposing (Data, SessionTable, Config, Lifeline, Model, Session)
 
 
-empty : Config -> Model
-empty conf =
-    Model [] Nothing conf
+{-
+   empty : Config -> Model
+   empty conf =
+       Model [] Nothing conf
+-}
 
 
-create : List Lifeline -> Maybe Session -> Config -> Model
-create lifelines session config =
-    { lifelines = lifelines, session = session, config = config }
+create : Data -> SessionTable -> Config -> Model
+create diagram sessionTable config =
+    { diagram = diagram, sessionTable = sessionTable, stack = [], config = config }

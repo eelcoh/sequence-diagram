@@ -12,11 +12,6 @@ import Sequence exposing (async, refSync, sequence, sync)
 import Window
 
 
-{-
-   App
--}
-
-
 type alias Model =
     Result Errors Diagram
 
@@ -26,7 +21,6 @@ type Msg
     | Next
     | Previous
     | End
-      --    | Select Hash
     | NewLocation Navigation.Location
     | WindowResizes Window.Size
     | NoOp

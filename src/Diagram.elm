@@ -36,10 +36,13 @@ import Diagram.Render.Config as Config
 import Diagram.Render.Lifeline as Lifeline
 import Diagram.Render.Session as RSession
 import Diagram.Session as Session
-import Diagram.Types as Types exposing (Model, Participant, Sequence, Size, NamedSequences)
+import Diagram.Data as Data
+import Diagram.Types as Types exposing (Data, Session, Model, Participant, Sequence, Size, NamedSequences)
 import Dict
 import List exposing (all)
 import Maybe.Extra
+import Dict.Extra as DictX
+import Result.Extra as ResultX
 import Svg
 import Svg.Attributes as SvgA
 
@@ -65,16 +68,35 @@ create participants sequence named =
         namedSequences =
             Dict.fromList named
 
-        rCompiled =
-            Participant.getIdentifiers namedSequences sequence
-                |> Result.map (Participant.merge participants)
-                |> Result.map (List.indexedMap (,))
-                |> Result.andThen (\p -> compile p sequence namedSequences)
+        rCurrent =
+            Data.create participants namedSequences sequence
 
-        createModel ( lifelines, session ) =
-            Model.create lifelines (Just session) (Config.default)
+        rTable =
+            List.map (\( a, b ) -> ( a, (Data.create participants namedSequences b) )) named
+                -- > List (k, Result e v)
+                |>
+                    List.map combine
+                -- > List (Result e (k, v))
+                |>
+                    ResultX.combine
+                -- > Result e (List (k, v))
+                |>
+                    Result.map Dict.fromList
+
+        -- > Result e SessionTable
+        createModel data table =
+            Model.create data table (Config.default)
     in
-        Result.map createModel rCompiled
+        Result.map2 createModel rCurrent rTable
+
+
+combine : ( String, Result Errors Data ) -> Result Errors ( String, Data )
+combine x =
+    let
+        mapfn key rValue =
+            Result.map ((,) key) rValue
+    in
+        uncurry mapfn x
 
 
 {-|
@@ -82,11 +104,7 @@ create participants sequence named =
 -}
 first : Model -> Model
 first model =
-    let
-        newSession =
-            Maybe.map Session.first model.session
-    in
-        { model | session = newSession }
+    move Session.first model
 
 
 {-|
@@ -94,12 +112,7 @@ first model =
 -}
 prev : Model -> Model
 prev model =
-    let
-        newSession =
-            Maybe.map Session.prev model.session
-                |> Maybe.map Tuple.second
-    in
-        { model | session = newSession }
+    move (Tuple.second << Session.prev) model
 
 
 {-|
@@ -115,11 +128,28 @@ rewind =
 -}
 next : Model -> Model
 next model =
+    move Session.next model
+
+
+
+{- generic function
+   takes a move function, and then creates a new model
+-}
+
+
+move : (Session -> Session) -> Model -> Model
+move fn model =
     let
+        current =
+            model.diagram
+
         newSession =
-            Maybe.map Session.next model.session
+            fn current.session
+
+        newDiagram =
+            { current | session = newSession }
     in
-        { model | session = newSession }
+        { model | diagram = newDiagram }
 
 
 {-|
@@ -127,11 +157,7 @@ next model =
 -}
 full : Model -> Model
 full model =
-    let
-        newSession =
-            Maybe.map Session.full model.session
-    in
-        { model | session = newSession }
+    move Session.full model
 
 
 {-|
@@ -140,23 +166,23 @@ full model =
 view : Model -> Svg.Svg msg
 view model =
     let
+        current =
+            model.diagram
+
         lifelineLength =
-            Maybe.map Session.max model.session
+            Session.max current.session
 
         lifelines ln =
-            List.map (Lifeline.view model.config ln) model.lifelines
+            List.map (Lifeline.view model.config ln) current.lifelines
 
         participants =
-            Maybe.map lifelines lifelineLength
+            lifelines lifelineLength
 
         session =
-            Maybe.map (RSession.view model.config) model.session
-                |> Maybe.Extra.toList
+            RSession.view model.config current.session
 
         elements =
-            participants
-                |> Maybe.map ((flip List.append) session)
-                |> Maybe.withDefault []
+            participants ++ [ session ]
     in
         Svg.svg
             --            [ version "1.1", x "0", y "0", viewBox "0 0 323.141 500.95" ]

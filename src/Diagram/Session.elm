@@ -235,18 +235,12 @@ prevSessions sessions =
             let
                 ( changed, newSessions ) =
                     prevSessions xs
-
-                s =
-                    (Debug.log "s: " (List.length sessions))
             in
                 case changed of
                     Unchanged ->
                         let
                             ( changedX, newSession ) =
                                 previous x
-
-                            -- db =
-                            --   Debug.log "Unchanged" Unchanged
                         in
                             ( changedX, (newSession :: newSessions) )
 
@@ -254,9 +248,6 @@ prevSessions sessions =
                         let
                             newSession =
                                 activateLast x
-
-                            -- db =
-                            --    Debug.log "Deactivated" Deactivated
                         in
                             ( Changed, (newSession :: newSessions) )
 
@@ -272,9 +263,6 @@ activateLast session =
     let
         ml =
             Sessions.get session
-
-        h =
-            Debug.log "activateLast " (getHash session)
     in
         case ml of
             Refer i ->
@@ -307,11 +295,7 @@ activateLastOfSessions sessions =
 
 activateThis : Session -> Session
 activateThis (Session hash attributes _ sessionDetails ( mArrowIn, mArrowOut ) sessions) =
-    let
-        h =
-            Debug.log "activateThis " hash
-    in
-        Session hash attributes Active sessionDetails ( mArrowIn, mArrowOut ) sessions
+    Session hash attributes Active sessionDetails ( mArrowIn, mArrowOut ) sessions
 
 
 showThis : Session -> Session
@@ -321,11 +305,7 @@ showThis (Session hash attributes _ sessionDetails ( mArrowIn, mArrowOut ) sessi
 
 hideThis : Session -> Session
 hideThis (Session hash attributes _ sessionDetails ( mArrowIn, mArrowOut ) sessions) =
-    let
-        h =
-            Debug.log "hideThis " hash
-    in
-        Session hash attributes Hidden sessionDetails ( mArrowIn, mArrowOut ) sessions
+    Session hash attributes Hidden sessionDetails ( mArrowIn, mArrowOut ) sessions
 
 
 activate : Int -> Session -> ( Bool, Session )
