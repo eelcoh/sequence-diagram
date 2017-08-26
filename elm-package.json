@@ -5,7 +5,8 @@
     "license": "BSD3",
     "source-directories": [
         "src",
-        "examples"
+        "examples/Navigate",
+        "examples/Highlight"        
     ],
     "exposed-modules": [
         "Diagram",

@@ -10,6 +10,7 @@ module Diagram.Attribute
         , return
         , person
         , system
+        , tag
         , empty
         )
 
@@ -20,6 +21,9 @@ module Diagram.Attribute
 
 # Styling helpers
 @docs addBackgroundColour, addTextColour, addLineColour
+
+# Visibility Tags
+@docs tag
 
 # Caption builders
 @docs caption, return
@@ -158,6 +162,15 @@ addLineColour : Color -> List Attribute -> List Attribute
 addLineColour color attributes =
     LineColour color
         |> \a -> a :: attributes
+
+
+{-| Tag a session. Is used to highlight sessions.
+* Sessions can have zero or more Tags
+* Tags can be shared across sessions
+-}
+tag : String -> Attribute
+tag t =
+    Tag t
 
 
 

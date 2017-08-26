@@ -62,6 +62,7 @@ type Attribute
     | Caption String
     | Return String
     | Actor ActorType
+    | Tag String
     | None
 
 

@@ -5,6 +5,7 @@ module Diagram
         , prev
         , rewind
         , full
+        , highlight
         , zoom
         , zoomOut
         , view
@@ -23,6 +24,9 @@ module Diagram
 # Navigate the diagram
 @docs first, next, prev, rewind, full, zoom, zoomOut
 
+# Highlight parts of the diagram
+@docs highlight
+
 # Create the SVG
 @docs view, resize
 
@@ -31,9 +35,7 @@ module Diagram
 
 -}
 
-import Diagram.Compile exposing (compile)
 import Diagram.Model as Model
-import Diagram.Participant as Participant
 import Diagram.Render.Config as Config
 import Diagram.Render.Lifeline as Lifeline
 import Diagram.Render.Session as RSession
@@ -42,8 +44,6 @@ import Diagram.Data as Data
 import Diagram.Types as Types exposing (Data, Session, Model, Identifier(..), Participant, Sequence, Size, NamedSequences)
 import Dict
 import List exposing (all)
-import Maybe.Extra
-import Dict.Extra as DictX
 import Result.Extra as ResultX
 import Svg
 import Svg.Attributes as SvgA
@@ -182,6 +182,14 @@ zoomOut model =
 
         _ ->
             model
+
+
+{-|
+  Highlight all sessions with (one of the) given tags.
+-}
+highlight : List String -> Model -> Model
+highlight tags model =
+    move (Session.highlight tags) model
 
 
 

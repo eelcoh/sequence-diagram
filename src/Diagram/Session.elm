@@ -5,6 +5,7 @@ module Diagram.Session
         , hide
         , first
         , full
+        , highlight
         , max
         , getZoom
         )
@@ -13,6 +14,8 @@ import Diagram.Arrow as Arrow
 import Diagram.Sessions as Sessions
 import Diagram.Types exposing (Config, Hash, Identifier(..), Horizontal, Identifier, Overlap(..), Range(..), Sessions(Refer), Session, Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
 import Maybe.Extra as MaybeX
+import Diagram.Attribute.Internal as Attributes
+import Diagram.Tag as Tag
 
 
 first : Session -> Session
@@ -489,6 +492,27 @@ getZoom session =
         Session _ _ _ _ _ (Sessions sessions) ->
             List.map getZoom sessions
                 |> List.foldr MaybeX.or Nothing
+
+
+highlight : List String -> Session -> Session
+highlight tags (Session hash attributes active sessionDetails arrows sessions) =
+    let
+        newSessions =
+            case sessions of
+                Sessions ss ->
+                    List.map (highlight tags) ss
+                        |> Sessions
+
+                Refer a ->
+                    sessions
+
+        newActive =
+            if Tag.hasTags (Attributes.getTags attributes) tags then
+                Active
+            else
+                Visible
+    in
+        Session hash attributes newActive sessionDetails arrows newSessions
 
 
 

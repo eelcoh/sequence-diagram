@@ -126,3 +126,17 @@ toAttribute attr =
 
         _ ->
             Nothing
+
+
+getTags : List Attribute -> List String
+getTags attrs =
+    let
+        ifTag a =
+            case a of
+                Tag t ->
+                    Just t
+
+                _ ->
+                    Nothing
+    in
+        List.filterMap ifTag attrs
