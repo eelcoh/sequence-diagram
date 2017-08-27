@@ -225,8 +225,10 @@ main =
                     [ sync "api1" [ caption "post /something" ] []
                     , sync "api2"
                         [ caption "post /anything", return "thing" ]
-                        [ async "backend" [ caption "post /this" ] []
-                        , sync "app" [ caption "back" ] []
+                        [ async "backend"
+                            [ caption "post /this" ]
+                            [ sync "api2" [ caption "back" ] []
+                            ]
                         , sync "api2" [ caption "store" ] []
                         , sync "backend" [ caption "post /this/too" ] []
                         ]
