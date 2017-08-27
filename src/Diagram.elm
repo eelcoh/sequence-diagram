@@ -1,13 +1,6 @@
 module Diagram
     exposing
-        ( first
-        , next
-        , prev
-        , rewind
-        , full
-        , zoom
-        , zoomOut
-        , view
+        ( view
         , create
         , resize
         , Diagram
@@ -16,12 +9,8 @@ module Diagram
 
 {-| Create a sequence diagram in Elm.
 
-
 # Initialise the diagram
 @docs create
-
-# Navigate the diagram
-@docs first, next, prev, rewind, full, zoom, zoomOut
 
 # Create the SVG
 @docs view, resize
@@ -31,9 +20,7 @@ module Diagram
 
 -}
 
-import Diagram.Compile exposing (compile)
 import Diagram.Model as Model
-import Diagram.Participant as Participant
 import Diagram.Render.Config as Config
 import Diagram.Render.Lifeline as Lifeline
 import Diagram.Render.Session as RSession
@@ -42,8 +29,6 @@ import Diagram.Data as Data
 import Diagram.Types as Types exposing (Data, Session, Model, Identifier(..), Participant, Sequence, Size, NamedSequences)
 import Dict
 import List exposing (all)
-import Maybe.Extra
-import Dict.Extra as DictX
 import Result.Extra as ResultX
 import Svg
 import Svg.Attributes as SvgA
@@ -102,110 +87,6 @@ combine x =
 
 
 {-|
-  Make the first session active, hide all others
--}
-first : Model -> Model
-first model =
-    move Session.first model
-
-
-{-|
-  Move one up.
--}
-prev : Model -> Model
-prev model =
-    move (Tuple.second << Session.prev) model
-
-
-{-|
-  Move back to the first
--}
-rewind : Model -> Model
-rewind =
-    first
-
-
-{-|
-  Go to the next session.
--}
-next : Model -> Model
-next model =
-    move Session.next model
-
-
-{-|
-  Set the full diagram visible
--}
-full : Model -> Model
-full model =
-    move Session.full model
-
-
-{-|
-  Zoom into the referred sequence.
--}
-zoom : Model -> Model
-zoom model =
-    let
-        current =
-            model.diagram
-
-        mData =
-            Session.getZoom current.session
-                |> Maybe.map (\(Identifier i) -> i)
-                |> Maybe.andThen (\i -> Dict.get i model.sessionTable)
-    in
-        case mData of
-            Nothing ->
-                model
-
-            Just d ->
-                let
-                    newDiagram =
-                        d
-
-                    newStack =
-                        model.diagram :: model.stack
-                in
-                    { model | diagram = newDiagram, stack = newStack }
-                        |> full
-
-
-{-|
-  Zoom out of the referred sequence.
--}
-zoomOut : Model -> Model
-zoomOut model =
-    case model.stack of
-        a :: xs ->
-            { model | diagram = a, stack = xs }
-
-        _ ->
-            model
-
-
-
-{- generic function
-   takes a move function, and then creates a new model
--}
-
-
-move : (Session -> Session) -> Model -> Model
-move fn model =
-    let
-        current =
-            model.diagram
-
-        newSession =
-            fn current.session
-
-        newDiagram =
-            { current | session = newSession }
-    in
-        { model | diagram = newDiagram }
-
-
-{-|
   Create the svg for the current state
 -}
 view : Model -> Svg.Svg msg
@@ -241,8 +122,14 @@ Resize the diagram, convenient to use in case of window resize
 resize : Diagram -> Size -> Diagram
 resize diagram size =
     let
+        numParticipants =
+            List.length diagram.diagram.lifelines
+
+        sessionsHeight =
+            Session.max diagram.diagram.session
+
         newConf =
-            Config.size diagram.config size
+            Config.size diagram.config size numParticipants sessionsHeight
     in
         { diagram | config = newConf }
 

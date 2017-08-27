@@ -5,12 +5,15 @@
     "license": "BSD3",
     "source-directories": [
         "src",
-        "examples"
+        "examples/Navigate",
+        "examples/Highlight"
     ],
     "exposed-modules": [
         "Diagram",
-        "Participant",
-        "Sequence",
+        "Diagram.Participant",
+        "Diagram.Sequence",
+        "Diagram.Navigate",
+        "Diagram.Highlight",
         "Diagram.Attribute"
     ],
     "dependencies": {

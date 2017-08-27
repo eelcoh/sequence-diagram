@@ -48,7 +48,7 @@ toSession (SessionPassTwo attrs horizontal vertical ( incoming, outgoing ) sessi
             Murmur3.hashString 24743 sessionString
     in
         Tuple.second stringsAndSessions
-            |> Session sessionId attrs Hidden details ( incoming, outgoing )
+            |> Session sessionId attrs Visible details ( incoming, outgoing )
             |> (,) sessionString
 
 

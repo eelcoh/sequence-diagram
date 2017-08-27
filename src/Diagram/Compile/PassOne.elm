@@ -6,7 +6,7 @@ module Diagram.Compile.PassOne
 import Diagram.Compile.Types exposing (..)
 import Diagram.Lifeline as Lifeline exposing (getDirection)
 import Diagram.NamedSequences as Named
-import Diagram.Sequence as Sequence
+import Diagram.Compile.Sequence as Sequence
 import Diagram.Types exposing (..)
 import Diagram.Y as Y
 import List.Extra as Extra

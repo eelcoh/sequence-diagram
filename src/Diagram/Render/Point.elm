@@ -43,7 +43,7 @@ offset { unitH, layerOffset } side =
 
 
 point : Config -> Coordinate -> Side -> Point
-point ({ width, unitV, unitH, layerOffset } as config) { lifelineIdx, layerIdx, y } side =
+point ({ unitV, unitH, layerOffset } as config) { lifelineIdx, layerIdx, y } side =
     let
         xLifeline =
             calculateBase config lifelineIdx
