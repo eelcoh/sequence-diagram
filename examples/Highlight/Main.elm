@@ -181,7 +181,8 @@ diagramStyle =
     style
         [ ( "order", "2" )
         , ( "width", "50%" )
-        , ( "margin-top", "20px" )
+        , ( "margin-top", "40px" )
+        , ( "margin-bottom", "30px" )
         ]
 
 
@@ -310,8 +311,10 @@ main =
                     [ sync "api1" [ tag "first", caption "post /something" ] []
                     , sync "api2"
                         [ tag "second", caption "post /anything", return "thing" ]
-                        [ async "backend" [ tag "second", tag "async", caption "post /this" ] []
-                        , sync "app" [ tag "second", tag "sync", caption "back" ] []
+                        [ async "backend"
+                            [ tag "second", tag "async", caption "post /this" ]
+                            [ sync "api2" [ tag "second", tag "async", caption "back" ] []
+                            ]
                         , sync "api2" [ tag "second", tag "sync", caption "store" ] []
                         , sync "backend" [ tag "second", tag "sync", caption "post /this/too" ] []
                         ]

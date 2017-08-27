@@ -249,8 +249,14 @@ Resize the diagram, convenient to use in case of window resize
 resize : Diagram -> Size -> Diagram
 resize diagram size =
     let
+        numParticipants =
+            List.length diagram.diagram.lifelines
+
+        sessionsHeight =
+            Session.max diagram.diagram.session
+
         newConf =
-            Config.size diagram.config size
+            Config.size diagram.config size numParticipants sessionsHeight
     in
         { diagram | config = newConf }
 

@@ -60,7 +60,7 @@ view config ln { participant, idx } =
                     , SvgA.y tt
                     , txtColor
                     , SvgA.fontFamily "Monospace"
-                    , SvgA.fontSize "6"
+                    , SvgA.fontSize "8"
                     , SvgA.dominantBaseline "middle"
                     , SvgA.cursor "pointer"
                     ]
@@ -106,7 +106,7 @@ getCoordinatesForComponent config lifelineIdx =
             calculateBase config lifelineIdx
 
         width =
-            config.space - 12
+            config.width
 
         stepHeight =
             config.unitV
