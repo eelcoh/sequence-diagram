@@ -225,15 +225,18 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
                     Y 0
 
         arrowInStart =
-            Y.add start addBefore
+            start
 
         sessionStart =
             Y.add arrowInStart arrowInExtra
 
+        sessionFirstStart =
+            Y.add sessionStart addBefore
+
         rNextSessions =
             case sequences of
                 Sessions sequenceList ->
-                    sessionsPassOne attrs sessionStart mLifelineIdx lifelines namedSequences sequenceList
+                    sessionsPassOne attrs sessionFirstStart mLifelineIdx lifelines namedSequences sequenceList
                         |> Result.map Sessions
 
                 Refer identifier ->
