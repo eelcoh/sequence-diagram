@@ -6,12 +6,14 @@
     "source-directories": [
         "src",
         "examples/Navigate",
-        "examples/Highlight"        
+        "examples/Highlight"
     ],
     "exposed-modules": [
         "Diagram",
-        "Participant",
-        "Sequence",
+        "Diagram.Participant",
+        "Diagram.Sequence",
+        "Diagram.Navigate",
+        "Diagram.Highlight",
         "Diagram.Attribute"
     ],
     "dependencies": {

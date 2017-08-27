@@ -1,15 +1,16 @@
 module Main exposing (..)
 
-import Color
-import Diagram exposing (Diagram, Errors, first, full, next, prev, rewind, zoom, zoomOut, highlight)
+import Diagram exposing (Diagram, Errors)
+import Diagram.Participant exposing (person, system)
+import Diagram.Sequence exposing (async, refSync, sequence, sync)
+import Diagram.Highlight exposing (highlight, reset)
 import Diagram.Attribute exposing (backgroundColour, caption, return, textColour, tag)
+import Color
 import Dict
 import Html exposing (Html)
 import Html.Attributes exposing (style)
 import Keyboard
 import Navigation
-import Participant exposing (person, system)
-import Sequence exposing (async, refSync, sequence, sync)
 import Window
 import Flow exposing (FlowStack)
 
@@ -35,7 +36,7 @@ update msg model =
         Start ->
             let
                 diagram =
-                    Result.map full model.diagram
+                    Result.map reset model.diagram
 
                 flow =
                     Flow.init initFlow
@@ -53,7 +54,7 @@ update msg model =
                             Result.map (highlight [ t ]) model.diagram
 
                         Nothing ->
-                            Result.map full model.diagram
+                            Result.map reset model.diagram
             in
                 ( { model | diagram = diagram, flow = newFlow }, Cmd.none )
 
@@ -68,7 +69,7 @@ update msg model =
                             Result.map (highlight [ t ]) model.diagram
 
                         Nothing ->
-                            Result.map full model.diagram
+                            Result.map reset model.diagram
             in
                 ( { model | diagram = diagram, flow = newFlow }, Cmd.none )
 
@@ -331,6 +332,6 @@ main =
 
         rDiagram =
             Diagram.create participants seq [ ( "seq2", seq2 ) ]
-                |> Result.map full
+                |> Result.map reset
     in
         app rDiagram

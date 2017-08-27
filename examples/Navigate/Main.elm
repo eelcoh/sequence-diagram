@@ -1,14 +1,15 @@
 module Main exposing (..)
 
-import Color
-import Diagram exposing (Diagram, Errors, first, full, next, prev, rewind, zoom, zoomOut)
+import Diagram exposing (Diagram, Errors)
+import Diagram.Participant exposing (person, system)
+import Diagram.Sequence exposing (async, refSync, sequence, sync)
+import Diagram.Navigate exposing (first, full, next, prev, rewind, zoom, zoomOut)
 import Diagram.Attribute exposing (backgroundColour, caption, return, textColour)
+import Color
 import Dict
 import Html exposing (Html)
 import Keyboard
 import Navigation
-import Participant exposing (person, system)
-import Sequence exposing (async, refSync, sequence, sync)
 import Window
 
 

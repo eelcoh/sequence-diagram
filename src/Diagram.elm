@@ -1,14 +1,6 @@
 module Diagram
     exposing
-        ( first
-        , next
-        , prev
-        , rewind
-        , full
-        , highlight
-        , zoom
-        , zoomOut
-        , view
+        ( view
         , create
         , resize
         , Diagram
@@ -17,15 +9,8 @@ module Diagram
 
 {-| Create a sequence diagram in Elm.
 
-
 # Initialise the diagram
 @docs create
-
-# Navigate the diagram
-@docs first, next, prev, rewind, full, zoom, zoomOut
-
-# Highlight parts of the diagram
-@docs highlight
 
 # Create the SVG
 @docs view, resize
@@ -99,118 +84,6 @@ combine x =
             Result.map ((,) key) rValue
     in
         uncurry mapfn x
-
-
-{-|
-  Make the first session active, hide all others
--}
-first : Model -> Model
-first model =
-    move Session.first model
-
-
-{-|
-  Move one up.
--}
-prev : Model -> Model
-prev model =
-    move (Tuple.second << Session.prev) model
-
-
-{-|
-  Move back to the first
--}
-rewind : Model -> Model
-rewind =
-    first
-
-
-{-|
-  Go to the next session.
--}
-next : Model -> Model
-next model =
-    move Session.next model
-
-
-{-|
-  Set the full diagram visible
--}
-full : Model -> Model
-full model =
-    move Session.full model
-
-
-{-|
-  Zoom into the referred sequence.
--}
-zoom : Model -> Model
-zoom model =
-    let
-        current =
-            model.diagram
-
-        mData =
-            Session.getZoom current.session
-                |> Maybe.map (\(Identifier i) -> i)
-                |> Maybe.andThen (\i -> Dict.get i model.sessionTable)
-    in
-        case mData of
-            Nothing ->
-                model
-
-            Just d ->
-                let
-                    newDiagram =
-                        d
-
-                    newStack =
-                        model.diagram :: model.stack
-                in
-                    { model | diagram = newDiagram, stack = newStack }
-                        |> full
-
-
-{-|
-  Zoom out of the referred sequence.
--}
-zoomOut : Model -> Model
-zoomOut model =
-    case model.stack of
-        a :: xs ->
-            { model | diagram = a, stack = xs }
-
-        _ ->
-            model
-
-
-{-|
-  Highlight all sessions with (one of the) given tags.
--}
-highlight : List String -> Model -> Model
-highlight tags model =
-    move (Session.highlight tags) model
-
-
-
-{- generic function
-   takes a move function, and then creates a new model
--}
-
-
-move : (Session -> Session) -> Model -> Model
-move fn model =
-    let
-        current =
-            model.diagram
-
-        newSession =
-            fn current.session
-
-        newDiagram =
-            { current | session = newSession }
-    in
-        { model | diagram = newDiagram }
 
 
 {-|

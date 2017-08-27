@@ -7,7 +7,7 @@ module Diagram.Data exposing (..)
 import Diagram.Participant as Participant
 import Diagram.Compile exposing (compile)
 import Diagram.Model as Model
-import Diagram.Participant as Participant
+import Diagram.Participant.Internal as Participant
 import Diagram.Render.Config as Config
 import Diagram.Render.Lifeline as Lifeline
 import Diagram.Render.Session as RSession
