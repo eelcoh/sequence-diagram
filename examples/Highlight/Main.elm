@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Flow exposing (FlowStack)
 import Diagram exposing (Diagram, Errors)
 import Diagram.Participant exposing (person, system)
 import Diagram.Sequence exposing (async, refSync, sequence, sync)
@@ -12,7 +13,6 @@ import Html.Attributes exposing (style)
 import Keyboard
 import Navigation
 import Window
-import Flow exposing (FlowStack)
 
 
 type alias Model =
@@ -332,6 +332,5 @@ main =
 
         rDiagram =
             Diagram.create participants seq [ ( "seq2", seq2 ) ]
-                |> Result.map reset
     in
         app rDiagram
