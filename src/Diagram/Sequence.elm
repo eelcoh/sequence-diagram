@@ -17,13 +17,13 @@ module Diagram.Sequence
 
 -}
 
-import Diagram.Types exposing (..)
+import Diagram.Internal.Types exposing (..)
 
 
 {-| Sequences can be seen as trees of function calls
 -}
 type alias Sequence =
-    Diagram.Types.Sequence
+    Diagram.Internal.Types.Sequence
 
 
 {-| Sequence: create a sequence without an incoming arrow. It is primarily

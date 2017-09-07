@@ -20,13 +20,13 @@ module Diagram
 
 -}
 
-import Diagram.Model as Model
-import Diagram.Render.Config as Config
-import Diagram.Render.Lifeline as Lifeline
-import Diagram.Render.Session as RSession
-import Diagram.Session as Session
-import Diagram.Data as Data
-import Diagram.Types as Types exposing (Data, Session, Model, Identifier(..), Participant, Sequence, Size, NamedSequences)
+import Diagram.Internal.Model as Model
+import Diagram.Internal.Render.Config as Config
+import Diagram.Internal.Render.Lifeline as Lifeline
+import Diagram.Internal.Render.Session as RSession
+import Diagram.Internal.Session as Session
+import Diagram.Internal.DiagramData as DiagramData
+import Diagram.Internal.Types as Types exposing (DiagramData, Session, Model, Identifier(..), Participant, Sequence, Size, NamedSequences)
 import Dict
 import List exposing (all)
 import Result.Extra as ResultX
@@ -56,10 +56,10 @@ create participants sequence named =
             Dict.fromList named
 
         rCurrent =
-            Data.create participants namedSequences sequence
+            DiagramData.create participants namedSequences sequence
 
         rTable =
-            List.map (\( a, b ) -> ( a, (Data.create participants namedSequences b) )) named
+            List.map (\( a, b ) -> ( a, (DiagramData.create participants namedSequences b) )) named
                 -- > List (k, Result e v)
                 |>
                     List.map combine
@@ -77,7 +77,7 @@ create participants sequence named =
         Result.map2 createModel rCurrent rTable
 
 
-combine : ( String, Result Errors Data ) -> Result Errors ( String, Data )
+combine : ( String, Result Errors DiagramData ) -> Result Errors ( String, DiagramData )
 combine x =
     let
         mapfn key rValue =

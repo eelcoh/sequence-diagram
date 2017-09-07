@@ -7,9 +7,9 @@ module Diagram.Highlight exposing (highlight, reset)
 
 -}
 
-import Diagram.Model as Model
-import Diagram.Types as Types exposing (Model)
-import Diagram.Session as Session
+import Diagram.Internal.Model as Model
+import Diagram.Internal.Types as Types exposing (Model)
+import Diagram.Internal.Session as Session
 
 
 {-|
