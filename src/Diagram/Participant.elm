@@ -16,14 +16,14 @@ module Diagram.Participant
 -}
 
 import Diagram.Attribute as Attribute
-import Diagram.Participant.Internal as Participant
-import Diagram.Types exposing (..)
+import Diagram.Internal.Participant as Participant
+import Diagram.Internal.Types exposing (..)
 
 
 {-| Participants
 -}
 type alias Participant =
-    Diagram.Types.Participant
+    Diagram.Internal.Types.Participant
 
 
 {-| Person: a function to declare a human participant in the lifeline

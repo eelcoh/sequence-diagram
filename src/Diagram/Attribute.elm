@@ -11,6 +11,7 @@ module Diagram.Attribute
         , person
         , system
         , tag
+        , id
         , empty
         )
 
@@ -23,7 +24,7 @@ module Diagram.Attribute
 @docs addBackgroundColour, addTextColour, addLineColour
 
 # Visibility Tags
-@docs tag
+@docs tag, id
 
 # Caption builders
 @docs caption, return
@@ -36,7 +37,7 @@ module Diagram.Attribute
 -}
 
 import Color exposing (Color)
-import Diagram.Types exposing (..)
+import Diagram.Internal.Types exposing (..)
 
 
 {-|
@@ -171,6 +172,14 @@ addLineColour color attributes =
 tag : String -> Attribute
 tag t =
     Tag t
+
+
+{-| Provide an id for a sessions, to be used to give context while navigating the diagram.
+An would make sense to make them unique, but nothing breaks if they aren't.
+-}
+id : String -> Attribute
+id i =
+    Id i
 
 
 

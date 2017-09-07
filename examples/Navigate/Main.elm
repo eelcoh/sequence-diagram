@@ -4,7 +4,6 @@ import Diagram exposing (Diagram, Errors)
 import Diagram.Participant exposing (person, system)
 import Diagram.Sequence exposing (async, refSync, sequence, sync)
 import Diagram.Navigate exposing (first, full, next, prev, rewind, zoom, zoomOut)
-import Diagram.Attribute exposing (backgroundColour, caption, return, textColour)
 import Color
 import Dict
 import Html exposing (Html)
@@ -220,15 +219,9 @@ main =
 
         seq =
             sequence "customer"
-                []
                 [ sync "app"
-                    [ caption "do something" ]
-                    [ sync "api1" [ caption "post /something" ] []
                     , sync "api2"
-                        [ caption "post /anything", return "thing" ]
                         [ async "backend"
-                            [ caption "post /this" ]
-                            [ sync "api2" [ caption "back" ] []
                             ]
                         , sync "api2" [ caption "store" ] []
                         , sync "backend" [ caption "post /this/too" ] []

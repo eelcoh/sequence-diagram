@@ -2,10 +2,7 @@ module Main exposing (..)
 
 import Flow exposing (FlowStack)
 import Diagram exposing (Diagram, Errors)
-import Diagram.Participant exposing (person, system)
-import Diagram.Sequence exposing (async, refSync, sequence, sync)
 import Diagram.Highlight exposing (highlight, reset)
-import Diagram.Attribute exposing (backgroundColour, caption, return, textColour, tag)
 import Color
 import Dict
 import Html exposing (Html)
@@ -13,6 +10,7 @@ import Html.Attributes exposing (style)
 import Keyboard
 import Navigation
 import Window
+import Sequence
 
 
 type alias Model =
@@ -288,49 +286,4 @@ app rDiagram =
 
 main : Program Never Model Msg
 main =
-    let
-        fg =
-            Color.rgb 242 242 242
-
-        bg =
-            Color.rgb 255 98 0
-
-        participants =
-            [ person "customer" [ backgroundColour bg, textColour fg ]
-            , system "app" [ backgroundColour bg, textColour fg, caption "client" ]
-            , system "gateway" [ backgroundColour bg, textColour fg ]
-            , system "api1" [ backgroundColour bg, textColour fg ]
-            , system "api2" [ backgroundColour bg, textColour fg ]
-            , system "backend" [ backgroundColour bg, textColour fg ]
-            ]
-
-        seq =
-            sequence "customer"
-                [ tag "start" ]
-                [ sync "app"
-                    [ tag "start", caption "do something" ]
-                    [ sync "api1" [ tag "first", caption "post /something" ] []
-                    , sync "api2"
-                        [ tag "second", caption "post /anything", return "thing" ]
-                        [ async "backend"
-                            [ tag "second", tag "async", caption "post /this" ]
-                            [ sync "api2" [ tag "second", tag "async", caption "back" ] []
-                            ]
-                        , sync "api2" [ tag "second", tag "sync", caption "store" ] []
-                        , sync "backend" [ tag "second", tag "sync", caption "post /this/too" ] []
-                        ]
-                    , refSync "seq2" [ caption "REFSYNC" ]
-                    ]
-                ]
-
-        seq2 =
-            sequence "api1"
-                []
-                [ sync "api2" [ caption "api2 call" ] []
-                , sync "backend" [ caption "backend call" ] []
-                ]
-
-        rDiagram =
-            Diagram.create participants seq [ ( "seq2", seq2 ) ]
-    in
-        app rDiagram
+    app Sequence.create

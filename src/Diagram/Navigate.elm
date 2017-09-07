@@ -16,32 +16,34 @@ module Diagram.Navigate
 
 -}
 
-import Diagram.Model as Model
-import Diagram.Types as Types exposing (Model, Identifier(..))
-import Diagram.Session as Session
+import Diagram.Internal.Model as Model
+import Diagram.Internal.Types as Types exposing (Model, Identifier(..))
+import Diagram.Internal.Session as Session
 import Dict
 
 
 {-|
   Make the first session active, hide all others
 -}
-first : Model -> Model
+first : Model -> ( Maybe String, Model )
 first model =
     Model.move Session.first model
+        |> addActiveId
 
 
 {-|
   Move one up.
 -}
-prev : Model -> Model
+prev : Model -> ( Maybe String, Model )
 prev model =
     Model.move (Tuple.second << Session.prev) model
+        |> addActiveId
 
 
 {-|
   Move back to the first
 -}
-rewind : Model -> Model
+rewind : Model -> ( Maybe String, Model )
 rewind =
     first
 
@@ -49,23 +51,25 @@ rewind =
 {-|
   Go to the next session.
 -}
-next : Model -> Model
+next : Model -> ( Maybe String, Model )
 next model =
     Model.move Session.next model
+        |> addActiveId
 
 
 {-|
   Set the full diagram visible
 -}
-full : Model -> Model
+full : Model -> ( Maybe String, Model )
 full model =
     Model.move Session.full model
+        |> addActiveId
 
 
 {-|
   Zoom into the referred sequence.
 -}
-zoom : Model -> Model
+zoom : Model -> ( Maybe String, Model )
 zoom model =
     let
         current =
@@ -79,6 +83,7 @@ zoom model =
         case mData of
             Nothing ->
                 model
+                    |> addActiveId
 
             Just d ->
                 let
@@ -95,11 +100,24 @@ zoom model =
 {-|
   Zoom out of the referred sequence.
 -}
-zoomOut : Model -> Model
+zoomOut : Model -> ( Maybe String, Model )
 zoomOut model =
     case model.stack of
         a :: xs ->
             { model | diagram = a, stack = xs }
+                |> addActiveId
 
         _ ->
             model
+                |> addActiveId
+
+
+addActiveId : Model -> ( Maybe String, Model )
+addActiveId model =
+    Model.currentSession model
+        |> Session.getCurrentActiveId
+        |> (flip (,)) model
+
+
+
+-- end
