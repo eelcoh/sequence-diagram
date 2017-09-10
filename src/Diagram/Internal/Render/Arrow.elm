@@ -86,7 +86,7 @@ viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 
             [ SvgA.y ty
             , SvgA.x tx
             , SvgA.fontFamily "Monospace"
-            , SvgA.fontSize "8"
+            , SvgA.fontSize "6"
             , textColor
             ]
     in

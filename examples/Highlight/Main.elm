@@ -3,7 +3,6 @@ module Main exposing (..)
 import Flow exposing (FlowStack)
 import Diagram exposing (Diagram, Errors)
 import Diagram.Highlight exposing (highlight, reset)
-import Color
 import Dict
 import Html exposing (Html)
 import Html.Attributes exposing (style)
@@ -76,14 +75,19 @@ update msg model =
 
         WindowResizes windowSize ->
             let
-                diagramWidth =
-                    ((windowSize.width // 5) * 3)
+                calcSize i =
+                    toFloat i
+                        |> (*) 0.4
+                        |> floor
 
-                wSize =
-                    Window.Size diagramWidth windowSize.height
+                newWidth =
+                    calcSize windowSize.width
+
+                newSize =
+                    { windowSize | width = newWidth }
 
                 diagram =
-                    Result.map (\d -> Diagram.resize d wSize) model.diagram
+                    Result.map (\d -> Diagram.resize d newSize) model.diagram
             in
                 ( { model | diagram = diagram }, Cmd.none )
 

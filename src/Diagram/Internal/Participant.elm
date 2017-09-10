@@ -63,13 +63,53 @@ getIdentifierResults namedSequences sequence =
                             [ Err error ]
 
                     Just seq ->
-                        getIdentifierResults namedSequences seq
+                        getIdentifierResultsSingle namedSequences seq
+                            |> List.singleton
+
+
+getIdentifierResultsSingle : NamedSequences -> Sequence -> Result Errors Identifier
+getIdentifierResultsSingle namedSequences sequence =
+    case sequence of
+        Sequence identifier _ steps ->
+            (Ok identifier)
+
+        Synchronous identifier _ steps ->
+            (Ok identifier)
+
+        Asynchronous identifier _ steps ->
+            (Ok identifier)
+
+        RefSync (Identifier sequenceName) _ ->
+            let
+                mSeq =
+                    Dict.get sequenceName namedSequences
+            in
+                case mSeq of
+                    Nothing ->
+                        let
+                            error =
+                                "Could not find sequence named "
+                                    ++ sequenceName
+                                    |> List.singleton
+                        in
+                            Err error
+
+                    Just seq ->
+                        getIdentifierResultsSingle namedSequences seq
 
 
 merge : List Participant -> List Identifier -> List Participant
 merge participants sParticipants =
-    List.foldr insert (List.reverse participants) sParticipants
-        |> List.reverse
+    let
+        equal : Participant -> Identifier -> Bool
+        equal (Participant (Identifier i) _) (Identifier j) =
+            i == j
+
+        gParticipants =
+            List.filter (\p -> List.any (equal p) sParticipants) participants
+    in
+        List.foldr insert (List.reverse gParticipants) sParticipants
+            |> List.reverse
 
 
 insert : Identifier -> List Participant -> List Participant
