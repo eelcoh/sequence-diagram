@@ -1,14 +1,14 @@
-module Main exposing (..)
+module Main exposing (Model, Msg(..), app, containerStyle, diagramStyle, explanationStyle, init, keyCodes, keyPressDispatcher, main, subscriptions, texts, toModel, update, view, viewDiagram, viewError, viewExplanation)
 
 import Diagram exposing (Diagram, Errors)
 import Diagram.Navigate exposing (first, full, next, prev, rewind, zoom, zoomOut)
+import Dict
 import Html exposing (Html)
 import Html.Attributes exposing (style)
-import Dict
 import Keyboard
 import Navigation
-import Window
 import Sequences
+import Window
 
 
 type alias Model =
@@ -38,7 +38,7 @@ update msg model =
                     Result.map rewind model.diagram
                         |> toModel
             in
-                ( newModel, Cmd.none )
+            ( newModel, Cmd.none )
 
         End ->
             let
@@ -46,7 +46,7 @@ update msg model =
                     Result.map full model.diagram
                         |> toModel
             in
-                ( newModel, Cmd.none )
+            ( newModel, Cmd.none )
 
         Next ->
             let
@@ -54,7 +54,7 @@ update msg model =
                     Result.map next model.diagram
                         |> toModel
             in
-                ( newModel, Cmd.none )
+            ( newModel, Cmd.none )
 
         Previous ->
             let
@@ -62,7 +62,7 @@ update msg model =
                     Result.map prev model.diagram
                         |> toModel
             in
-                ( newModel, Cmd.none )
+            ( newModel, Cmd.none )
 
         Zoom ->
             let
@@ -70,7 +70,7 @@ update msg model =
                     Result.map zoom model.diagram
                         |> toModel
             in
-                ( newModel, Cmd.none )
+            ( newModel, Cmd.none )
 
         ZoomOut ->
             let
@@ -78,7 +78,7 @@ update msg model =
                     Result.map zoomOut model.diagram
                         |> toModel
             in
-                ( newModel, Cmd.none )
+            ( newModel, Cmd.none )
 
         NewLocation l ->
             ( model, Cmd.none )
@@ -87,9 +87,9 @@ update msg model =
             let
                 newModel =
                     Result.map (\d -> Diagram.resize d windowSize) model.diagram
-                        |> (flip Model) Nothing
+                        |> (\b a -> Model a b) Nothing
             in
-                ( newModel, Cmd.none )
+            ( newModel, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
@@ -109,39 +109,56 @@ keyCodes : Dict.Dict Int Msg
 keyCodes =
     Dict.fromList
         [ ( 36, Start )
-          -- home
+
+        -- home
         , ( 35, End )
-          -- end
+
+        -- end
         , ( 13, Next )
-          -- return
+
+        -- return
         , ( 32, Next )
-          -- space
+
+        -- space
         , ( 39, Next )
-          -- arrow right
+
+        -- arrow right
         , ( 76, End )
-          -- l
+
+        -- l
         , ( 82, Start )
-          -- r for rewind
+
+        -- r for rewind
         , ( 83, Start )
-          -- s for start
+
+        -- s for start
         , ( 68, Next )
-          -- d
+
+        -- d
         , ( 70, End )
-          -- f
+
+        -- f
         , ( 37, Previous )
-          -- arrow left
+
+        -- arrow left
         , ( 78, Next )
-          -- n
+
+        -- n
         , ( 80, Previous )
-          -- p
+
+        -- p
         , ( 72, Previous )
-          -- h
+
+        -- h
         , ( 90, Zoom )
-          -- z
+
+        -- z
         , ( 27, ZoomOut )
-          -- Escape
+
+        -- Escape
         , ( 79, ZoomOut )
-          -- o
+
+        -- o
         ]
 
 
@@ -154,7 +171,7 @@ keyPressDispatcher keyCode =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Keyboard.ups (keyPressDispatcher)
+        [ Keyboard.ups keyPressDispatcher
         , Window.resizes WindowResizes
         ]
 
@@ -165,7 +182,7 @@ init diagram location =
         model =
             Model diagram Nothing
     in
-        ( model, Cmd.none )
+    ( model, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -311,20 +328,20 @@ texts =
                     ]
                 ]
     in
-        [ ( "0", startText )
-        , ( "1", startText )
-        , ( "2", firstText )
-        , ( "3", secondText )
-        , ( "4", asyncText )
-        , ( "5", syncText )
-        , ( "6", syncText )
-        , ( "7", syncText )
-        , ( "8", refText )
-        , ( "9", ref1Text )
-        , ( "10", ref1Text )
-        , ( "11", ref1Text )
-        ]
-            |> Dict.fromList
+    [ ( "0", startText )
+    , ( "1", startText )
+    , ( "2", firstText )
+    , ( "3", secondText )
+    , ( "4", asyncText )
+    , ( "5", syncText )
+    , ( "6", syncText )
+    , ( "7", syncText )
+    , ( "8", refText )
+    , ( "9", ref1Text )
+    , ( "10", ref1Text )
+    , ( "11", ref1Text )
+    ]
+        |> Dict.fromList
 
 
 app : Result Errors Diagram -> Program Never Model Msg

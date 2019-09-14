@@ -1,4 +1,4 @@
-module Diagram.Internal.Render.Colour exposing (..)
+module Diagram.Internal.Render.Colour exposing (background, border, fill, head, line, none, stroke, text, txt)
 
 import Color
 import Color.Convert

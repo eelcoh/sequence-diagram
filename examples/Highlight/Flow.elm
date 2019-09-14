@@ -1,4 +1,4 @@
-module Flow exposing (FlowStack, next, prev, current, init)
+module Flow exposing (FlowStack, current, init, next, prev)
 
 
 type alias FlowStack =

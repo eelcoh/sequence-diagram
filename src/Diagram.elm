@@ -1,32 +1,35 @@
-module Diagram
-    exposing
-        ( view
-        , create
-        , resize
-        , Diagram
-        , Errors
-        )
+module Diagram exposing
+    ( create
+    , view, resize
+    , Diagram, Errors
+    )
 
 {-| Create a sequence diagram in Elm.
 
+
 # Initialise the diagram
+
 @docs create
 
+
 # Create the SVG
+
 @docs view, resize
 
-# Data
-@docs Diagram, Errors
 
+# Data
+
+@docs Diagram, Errors
+ 
 -}
 
+import Diagram.Internal.DiagramData as DiagramData
 import Diagram.Internal.Model as Model
 import Diagram.Internal.Render.Config as Config
 import Diagram.Internal.Render.Lifeline as Lifeline
 import Diagram.Internal.Render.Session as RSession
 import Diagram.Internal.Session as Session
-import Diagram.Internal.DiagramData as DiagramData
-import Diagram.Internal.Types as Types exposing (DiagramData, Session, Model, Identifier(..), Participant, Sequence, Size, NamedSequences)
+import Diagram.Internal.Types as Types exposing (DiagramData, Identifier(..), Model, NamedSequences, Participant, Sequence, Session, Size)
 import Dict
 import List exposing (all)
 import Result.Extra as ResultX
@@ -46,8 +49,7 @@ type alias Errors =
     Types.Errors
 
 
-{-|
-  Initialise the diagram.
+{-| Initialise the diagram.
 -}
 create : List Participant -> Sequence -> List ( String, Sequence ) -> Result Errors Model
 create participants sequence named =
@@ -59,35 +61,31 @@ create participants sequence named =
             DiagramData.create participants namedSequences sequence
 
         rTable =
-            List.map (\( a, b ) -> ( a, (DiagramData.create participants namedSequences b) )) named
+            List.map (\( a, b ) -> ( a, DiagramData.create participants namedSequences b )) named
                 -- > List (k, Result e v)
-                |>
-                    List.map combine
+                |> List.map combine
                 -- > List (Result e (k, v))
-                |>
-                    ResultX.combine
+                |> ResultX.combine
                 -- > Result e (List (k, v))
-                |>
-                    Result.map Dict.fromList
+                |> Result.map Dict.fromList
 
         -- > Result e SessionTable
         createModel data table =
-            Model.create data table (Config.default)
+            Model.create data table Config.default
     in
-        Result.map2 createModel rCurrent rTable
+    Result.map2 createModel rCurrent rTable
 
 
 combine : ( String, Result Errors DiagramData ) -> Result Errors ( String, DiagramData )
 combine x =
     let
         mapfn key rValue =
-            Result.map ((,) key) rValue
+            Result.map (\b -> ( key, b )) rValue
     in
-        uncurry mapfn x
+    (\( a, b ) -> mapfn a b) x
 
 
-{-|
-  Create the svg for the current state
+{-| Create the svg for the current state
 -}
 view : Model -> Svg.Svg msg
 view model =
@@ -110,14 +108,13 @@ view model =
         elements =
             participants ++ [ session ]
     in
-        Svg.svg
-            --            [ version "1.1", x "0", y "0", viewBox "0 0 323.141 500.95" ]
-            [ SvgA.version "1.1", SvgA.x "0", SvgA.y "0", SvgA.viewBox (dims model) ]
-            elements
+    Svg.svg
+        --            [ version "1.1", x "0", y "0", viewBox "0 0 323.141 500.95" ]
+        [ SvgA.version "1.1", SvgA.x "0", SvgA.y "0", SvgA.viewBox (dims model) ]
+        elements
 
 
-{-|
-Resize the diagram, convenient to use in case of window resize
+{-| Resize the diagram, convenient to use in case of window resize
 -}
 resize : Diagram -> Size -> Diagram
 resize diagram size =
@@ -131,7 +128,7 @@ resize diagram size =
         newConf =
             Config.size diagram.config size numParticipants sessionsHeight
     in
-        { diagram | config = newConf }
+    { diagram | config = newConf }
 
 
 dims : Model -> String
@@ -145,7 +142,7 @@ dims { config } =
             config.size.height
                 |> toString
     in
-        String.join " " [ "0", "0", w, h ]
+    String.join " " [ "0", "0", w, h ]
 
 
 

@@ -1,4 +1,4 @@
-module Diagram.Internal.Render.Config exposing (create, default, size, calculateBase)
+module Diagram.Internal.Render.Config exposing (calculateBase, create, default, size)
 
 import Diagram.Internal.Types exposing (Config, LifelineIdx(..), Size)
 
@@ -16,7 +16,7 @@ create sz =
 
 default : Config
 default =
-    { size = (Size 400 600)
+    { size = Size 400 600
     , width = 54.0
     , unitV = 16.0
     , unitH = 10.0
@@ -40,7 +40,7 @@ size conf sz numParticipants sessionsHeight =
             5 * unitH
 
         yFactor =
-            (toFloat sz.height) / (toFloat sessionsHeight)
+            toFloat sz.height / toFloat sessionsHeight
 
         unitV =
             1.6 * unitH
@@ -48,7 +48,7 @@ size conf sz numParticipants sessionsHeight =
         layerOffset =
             0.4 * unitH
     in
-        { conf | size = sz, unitH = unitH, width = width, space = space, unitV = unitV, layerOffset = layerOffset }
+    { conf | size = sz, unitH = unitH, width = width, space = space, unitV = unitV, layerOffset = layerOffset }
 
 
 calculateBase : Config -> LifelineIdx -> Float

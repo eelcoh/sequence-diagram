@@ -1,12 +1,9 @@
-module Diagram.Internal.Compile.PassTwo
-    exposing
-        ( pass
-        )
+module Diagram.Internal.Compile.PassTwo exposing (pass)
 
 import Diagram.Internal.Compile.Arrow as Arrow
-import Diagram.Internal.Layer exposing (registerSession)
 import Diagram.Internal.Compile.Types exposing (..)
-import Diagram.Internal.Types exposing (Arrow, Attribute, ArrowType(..), Coordinate, Direction(..), Range(..), Horizontal, LayerIdx, Lifeline, LifelineIdx, Sessions(..), Vertical, X(..), Y)
+import Diagram.Internal.Layer exposing (registerSession)
+import Diagram.Internal.Types exposing (Arrow, ArrowType(..), Attribute, Coordinate, Direction(..), Horizontal, LayerIdx, Lifeline, LifelineIdx, Range(..), Sessions(..), Vertical, X(..), Y)
 
 
 pass : Maybe Horizontal -> Maybe Vertical -> List Lifeline -> SessionPassOne -> ( SessionPassTwo, List Lifeline )
@@ -54,7 +51,7 @@ pass mHorizontalFrom mVerticalFrom lifelines (SessionPassOne attrs lifeline vert
         session =
             SessionPassTwo attrs horizontal vertical newArrows newSteps
     in
-        ( session, newNwLifelines )
+    ( session, newNwLifelines )
 
 
 sessionsPassTwo : List Attribute -> Maybe Horizontal -> Maybe Vertical -> List Lifeline -> Sessions (List SessionPassOne) -> ( Sessions (List SessionPassTwo), List Lifeline )
@@ -68,7 +65,7 @@ sessionsPassTwo attributes mFromHorizontal mFromVertical lifelines steps =
                 ( nwSessions, nwLifelines ) =
                     sessionsPassTwoList attributes mFromHorizontal mFromVertical lifelines l
             in
-                ( (Sessions nwSessions), nwLifelines )
+            ( Sessions nwSessions, nwLifelines )
 
 
 sessionsPassTwoList : List Attribute -> Maybe Horizontal -> Maybe Vertical -> List Lifeline -> List SessionPassOne -> ( List SessionPassTwo, List Lifeline )
@@ -85,7 +82,7 @@ sessionsPassTwoList attributes mFromHorizontal mFromVertical lifelines steps =
                 ( nwSessions, nwNwLifelines ) =
                     sessionsPassTwoList attributes mFromHorizontal mFromVertical nwLifelines rest
             in
-                ( (nwSession :: nwSessions), nwNwLifelines )
+            ( nwSession :: nwSessions, nwNwLifelines )
 
 
 
@@ -105,7 +102,7 @@ createIncomingArrow attrs mHorizontalFrom mVerticalFrom horizontal vertical arro
         f h v =
             Arrow.create attrs h vertical.arrowInStart horizontal vertical.start arrowTempData
     in
-        Maybe.map2 f mHorizontalFrom mVerticalFrom
+    Maybe.map2 f mHorizontalFrom mVerticalFrom
 
 
 createOutgoingArrow : List Attribute -> Horizontal -> Vertical -> Maybe Horizontal -> Maybe Vertical -> ArrowTempData -> Maybe Arrow
@@ -114,4 +111,4 @@ createOutgoingArrow attrs horizontal vertical mHorizontalFrom mVerticalFrom arro
         f h v =
             Arrow.create attrs horizontal vertical.end h vertical.arrowOutEnd arrowTempData
     in
-        Maybe.map2 f mHorizontalFrom mVerticalFrom
+    Maybe.map2 f mHorizontalFrom mVerticalFrom

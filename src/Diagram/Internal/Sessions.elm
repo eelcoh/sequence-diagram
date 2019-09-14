@@ -1,6 +1,6 @@
-module Diagram.Internal.Sessions exposing (..)
+module Diagram.Internal.Sessions exposing (get, map, reverse)
 
-import Diagram.Internal.Types exposing (Sessions(..), Session(..))
+import Diagram.Internal.Types exposing (Session(..), Sessions(..))
 
 
 map : (a -> b) -> Sessions (List a) -> Sessions (List b)

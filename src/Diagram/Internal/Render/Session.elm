@@ -1,16 +1,14 @@
-module Diagram.Internal.Render.Session
-    exposing
-        ( view
-        )
+module Diagram.Internal.Render.Session exposing (view)
 
 import Diagram.Internal.Attribute as Attributes
 import Diagram.Internal.Render.Arrow as Arrow
 import Diagram.Internal.Render.Colour as Colour
 import Diagram.Internal.Render.Config as Config
-import Diagram.Internal.Types exposing (Config, Hash, Horizontal, Overlap(..), Range(..), Sessions(..), Session(..), SessionDetails, Show(..), Vertical, Y(..))
+import Diagram.Internal.Sessions as Sessions
+import Diagram.Internal.Types exposing (Config, Hash, Horizontal, Overlap(..), Range(..), Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
 import Svg exposing (Svg)
 import Svg.Attributes as SvgA
-import Diagram.Internal.Sessions as Sessions
+
 
 
 -- view
@@ -23,15 +21,15 @@ view config session =
             viewSession config session
 
         vSessions =
-            case (Sessions.get session) of
+            case Sessions.get session of
                 Refer i ->
                     []
 
                 Sessions sessions ->
                     List.map (view config) sessions
     in
-        Svg.g []
-            (vThis ++ vSessions)
+    Svg.g []
+        (vThis ++ vSessions)
 
 
 viewSession : Config -> Session -> List (Svg msg)
@@ -47,19 +45,19 @@ viewSession config (Session hash attributes active model ( mArrowIn, mArrowOut )
             Config.calculateBase config model.lifelineIdx
 
         top =
-            (toFloat model.start)
+            toFloat model.start
                 * config.unitV
                 |> toString
 
         height =
-            ((toFloat model.end) - (toFloat model.start))
+            (toFloat model.end - toFloat model.start)
                 * config.unitV
                 |> toString
 
         left =
             base
                 - (config.unitH * 0.5)
-                + ((toFloat model.layerIdx) * config.layerOffset)
+                + (toFloat model.layerIdx * config.layerOffset)
                 |> toString
 
         width =
@@ -95,4 +93,4 @@ viewSession config (Session hash attributes active model ( mArrowIn, mArrowOut )
         arrows =
             List.filterMap identity [ vArrowIn, vArrowOut ]
     in
-        (Svg.rect attrs []) :: arrows
+    Svg.rect attrs [] :: arrows

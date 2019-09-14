@@ -1,15 +1,13 @@
-module Diagram.Internal.Compile.PassOne
-    exposing
-        ( pass
-        )
+module Diagram.Internal.Compile.PassOne exposing (pass)
 
-import Diagram.Internal.Compile.Types exposing (..)
-import Diagram.Internal.Lifeline as Lifeline exposing (getDirection)
 import Diagram.Internal.Compile.NamedSequences as Named
 import Diagram.Internal.Compile.Sequence as Sequence
+import Diagram.Internal.Compile.Types exposing (..)
+import Diagram.Internal.Lifeline as Lifeline exposing (getDirection)
 import Diagram.Internal.Types exposing (..)
 import Diagram.Internal.Y as Y
 import List.Extra as Extra
+
 
 
 -- Pass one: get all vertical dimensions right
@@ -21,11 +19,11 @@ pass start mLifelineIdxFrom lifelines sequence namedSequences =
         Synchronous identifier attributes sequences ->
             let
                 arrows =
-                    { incoming = (Just SyncArrow)
+                    { incoming = Just SyncArrow
                     , outgoing = True
                     }
             in
-                addSession lifelines namedSequences mLifelineIdxFrom identifier attributes (Sessions sequences) start arrows
+            addSession lifelines namedSequences mLifelineIdxFrom identifier attributes (Sessions sequences) start arrows
 
         Asynchronous identifier attributes sequences ->
             let
@@ -34,7 +32,7 @@ pass start mLifelineIdxFrom lifelines sequence namedSequences =
                     , outgoing = False
                     }
             in
-                addSession lifelines namedSequences mLifelineIdxFrom identifier attributes (Sessions sequences) start arrows
+            addSession lifelines namedSequences mLifelineIdxFrom identifier attributes (Sessions sequences) start arrows
 
         Sequence identifier attributes sequences ->
             let
@@ -43,21 +41,21 @@ pass start mLifelineIdxFrom lifelines sequence namedSequences =
                     , outgoing = False
                     }
             in
-                addSession lifelines namedSequences mLifelineIdxFrom identifier attributes (Sessions sequences) start arrows
+            addSession lifelines namedSequences mLifelineIdxFrom identifier attributes (Sessions sequences) start arrows
 
         RefSync sequenceName attributes ->
             let
                 arrows =
-                    { incoming = (Just SyncArrow)
+                    { incoming = Just SyncArrow
                     , outgoing = True
                     }
 
                 doAddSession identifier =
                     addSession lifelines namedSequences mLifelineIdxFrom identifier attributes (Refer sequenceName) start arrows
             in
-                Named.get sequenceName namedSequences
-                    |> Result.andThen (Sequence.getIdentifier namedSequences)
-                    |> Result.andThen doAddSession
+            Named.get sequenceName namedSequences
+                |> Result.andThen (Sequence.getIdentifier namedSequences)
+                |> Result.andThen doAddSession
 
 
 addSession : List Lifeline -> NamedSequences -> Maybe LifelineIdx -> Identifier -> List Attribute -> Sessions (List Sequence) -> Start -> ArrowMeta -> Result Errors SessionPassOne
@@ -116,7 +114,7 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
                     Y 0
 
                 Just sequence ->
-                    case Maybe.map2 (,) mDirectionIn mDirectionFirst of
+                    case Maybe.map2 (\a b -> ( a, b )) mDirectionIn mDirectionFirst of
                         Just ( ToSelf, ToSelf ) ->
                             Y 1
 
@@ -168,45 +166,45 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
                                 RefSync _ _ ->
                                     True
                     in
-                        case Maybe.map2 ((,,,) withReturn lastHasReturn) mDirectionLast mDirectionBack of
-                            Just ( False, _, _, _ ) ->
-                                Y 0
+                    case Maybe.map2 (\c d -> ( withReturn, lastHasReturn, c, d )) mDirectionLast mDirectionBack of
+                        Just ( False, _, _, _ ) ->
+                            Y 0
 
-                            Just ( True, False, ToSelf, _ ) ->
-                                Y 1
+                        Just ( True, False, ToSelf, _ ) ->
+                            Y 1
 
-                            Just ( True, False, _, _ ) ->
-                                Y 0
+                        Just ( True, False, _, _ ) ->
+                            Y 0
 
-                            Just ( _, _, ToSelf, ToSelf ) ->
-                                Y 1
+                        Just ( _, _, ToSelf, ToSelf ) ->
+                            Y 1
 
-                            Just ( _, _, ToSelf, LeftToRight ) ->
-                                Y 1
+                        Just ( _, _, ToSelf, LeftToRight ) ->
+                            Y 1
 
-                            Just ( _, _, ToSelf, RightToLeft ) ->
-                                Y 0
+                        Just ( _, _, ToSelf, RightToLeft ) ->
+                            Y 0
 
-                            Just ( _, _, LeftToRight, ToSelf ) ->
-                                Y 0
+                        Just ( _, _, LeftToRight, ToSelf ) ->
+                            Y 0
 
-                            Just ( _, _, LeftToRight, LeftToRight ) ->
-                                Y 0
+                        Just ( _, _, LeftToRight, LeftToRight ) ->
+                            Y 0
 
-                            Just ( _, _, LeftToRight, RightToLeft ) ->
-                                Y 1
+                        Just ( _, _, LeftToRight, RightToLeft ) ->
+                            Y 1
 
-                            Just ( _, _, RightToLeft, ToSelf ) ->
-                                Y 1
+                        Just ( _, _, RightToLeft, ToSelf ) ->
+                            Y 1
 
-                            Just ( _, _, RightToLeft, LeftToRight ) ->
-                                Y 0
+                        Just ( _, _, RightToLeft, LeftToRight ) ->
+                            Y 0
 
-                            Just ( _, _, RightToLeft, RightToLeft ) ->
-                                Y 0
+                        Just ( _, _, RightToLeft, RightToLeft ) ->
+                            Y 0
 
-                            Nothing ->
-                                Y 0
+                        Nothing ->
+                            Y 0
 
         arrowInExtra =
             case mDirectionIn of
@@ -217,7 +215,7 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
                     Y 0
 
         arrowOutExtra =
-            case Maybe.map ((,) withReturn) mDirectionBack of
+            case Maybe.map (\b -> ( withReturn, b )) mDirectionBack of
                 Just ( True, ToSelf ) ->
                     Y 1
 
@@ -289,6 +287,7 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
                         }
                     )
                     mDirectionBack
+
             else
                 Nothing
 
@@ -309,7 +308,7 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
                     SessionPassOne attrs l v arrows ns
                         |> Ok
     in
-        toPassOne mLifelineIdx rNextSessions
+    toPassOne mLifelineIdx rNextSessions
 
 
 sessionsPassOne : List Attribute -> Start -> Maybe LifelineIdx -> List Lifeline -> NamedSequences -> List Sequence -> Result Errors (List SessionPassOne)
@@ -323,14 +322,14 @@ sessionsPassOne attrs start mLifelineIdxFrom lifelines namedSequences sequences 
                 first =
                     pass start mLifelineIdxFrom lifelines sequence namedSequences
             in
-                case first of
-                    Err errors ->
-                        Err errors
+            case first of
+                Err errors ->
+                    Err errors
 
-                    Ok ((SessionPassOne _ _ v _ _) as session) ->
-                        let
-                            newStart =
-                                Y.add v.arrowOutEnd (Y 1)
-                        in
-                            sessionsPassOne attrs newStart mLifelineIdxFrom lifelines namedSequences rest
-                                |> Result.map ((::) session)
+                Ok ((SessionPassOne _ _ v _ _) as session) ->
+                    let
+                        newStart =
+                            Y.add v.arrowOutEnd (Y 1)
+                    in
+                    sessionsPassOne attrs newStart mLifelineIdxFrom lifelines namedSequences rest
+                        |> Result.map ((::) session)

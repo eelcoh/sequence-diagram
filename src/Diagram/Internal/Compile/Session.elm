@@ -1,11 +1,8 @@
-module Diagram.Internal.Compile.Session
-    exposing
-        ( toSession
-        )
+module Diagram.Internal.Compile.Session exposing (toSession)
 
-import Diagram.Internal.Lifeline as Lifeline
 import Diagram.Internal.Compile.Types exposing (SessionPassTwo(..))
-import Diagram.Internal.Types exposing (Config, Hash, Horizontal, Overlap(..), Identifier(..), Session, Sessions(..), Session(..), SessionDetails, Range(..), Show(..), Vertical, Y(..))
+import Diagram.Internal.Lifeline as Lifeline
+import Diagram.Internal.Types exposing (Config, Hash, Horizontal, Identifier(..), Overlap(..), Range(..), Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
 import Diagram.Internal.X as X
 import Diagram.Internal.Y as Y
 import Murmur3
@@ -42,14 +39,14 @@ toSession (SessionPassTwo attrs horizontal vertical ( incoming, outgoing ) sessi
             Tuple.first stringsAndSessions
 
         sessionString =
-            (detailsString ++ sessionsString)
+            detailsString ++ sessionsString
 
         sessionId =
             Murmur3.hashString 24743 sessionString
     in
-        Tuple.second stringsAndSessions
-            |> Session sessionId attrs Visible details ( incoming, outgoing )
-            |> (,) sessionString
+    Tuple.second stringsAndSessions
+        |> Session sessionId attrs Visible details ( incoming, outgoing )
+        |> (\b -> ( sessionString, b ))
 
 
 toSessions : String -> Sessions (List SessionPassTwo) -> ( String, Sessions (List Session) )
@@ -60,7 +57,7 @@ toSessions detailsString sessions =
                 sessionsString =
                     String.join " / " [ "refer", "identifier", i, detailsString ]
             in
-                ( sessionsString, Refer (Identifier i) )
+            ( sessionsString, Refer (Identifier i) )
 
         Sessions s ->
             listToSessions s
@@ -70,7 +67,7 @@ listToSessions : List SessionPassTwo -> ( String, Sessions (List Session) )
 listToSessions sessions =
     List.map toSession sessions
         |> List.unzip
-        |> (\( a, b ) -> ( (String.join " / " a), Sessions b ))
+        |> (\( a, b ) -> ( String.join " / " a, Sessions b ))
 
 
 toSessionDetails : Horizontal -> Vertical -> SessionDetails

@@ -1,4 +1,4 @@
-module Diagram.Internal.Types exposing (..)
+module Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowDetails, ArrowType(..), Attribute(..), Config, Coordinate, DiagramData, Direction(..), End, Errors, Hash, Head(..), Horizontal, Identifier(..), Layer(..), LayerIdx, Lifeline, LifelineDetails, LifelineIdx(..), Line, LineCoordinates, LineType(..), Model, NamedSequence, NamedSequences, Overlap(..), Participant(..), Point(..), Range(..), Rectangle, Sequence(..), Session(..), SessionDetails, SessionTable, Sessions(..), Show(..), Side(..), Size, Start, Vertical, X(..), Y(..))
 
 import Color exposing (Color)
 import Dict exposing (Dict)
@@ -50,10 +50,12 @@ type alias Errors =
 
 
 {-| Attributes are
+
   - Colours for text, background and line.
   - Captions for the arrows and participants.
   - Actor for participants
   - PageRange for creating multiple images for presenting the sequence diagram step by step
+
 -}
 type Attribute
     = BackgroundColour Color

@@ -1,16 +1,16 @@
-module Main exposing (..)
+module Main exposing (Model, Msg(..), app, containerStyle, diagramStyle, explanationStyle, init, initFlow, keyCodes, keyPressDispatcher, main, subscriptions, texts, update, view, viewDiagram, viewError, viewExplanation)
 
-import Flow exposing (FlowStack)
+import Color
 import Diagram exposing (Diagram, Errors)
 import Diagram.Highlight exposing (highlight, reset)
-import Color
 import Dict
+import Flow exposing (FlowStack)
 import Html exposing (Html)
 import Html.Attributes exposing (style)
 import Keyboard
 import Navigation
-import Window
 import Sequence
+import Window
 
 
 type alias Model =
@@ -39,7 +39,7 @@ update msg model =
                 flow =
                     Flow.init initFlow
             in
-                ( { model | diagram = diagram, flow = flow }, Cmd.none )
+            ( { model | diagram = diagram, flow = flow }, Cmd.none )
 
         Next ->
             let
@@ -54,7 +54,7 @@ update msg model =
                         Nothing ->
                             Result.map reset model.diagram
             in
-                ( { model | diagram = diagram, flow = newFlow }, Cmd.none )
+            ( { model | diagram = diagram, flow = newFlow }, Cmd.none )
 
         Previous ->
             let
@@ -69,7 +69,7 @@ update msg model =
                         Nothing ->
                             Result.map reset model.diagram
             in
-                ( { model | diagram = diagram, flow = newFlow }, Cmd.none )
+            ( { model | diagram = diagram, flow = newFlow }, Cmd.none )
 
         NewLocation l ->
             ( model, Cmd.none )
@@ -77,7 +77,7 @@ update msg model =
         WindowResizes windowSize ->
             let
                 diagramWidth =
-                    ((windowSize.width // 5) * 3)
+                    (windowSize.width // 5) * 3
 
                 wSize =
                     Window.Size diagramWidth windowSize.height
@@ -85,7 +85,7 @@ update msg model =
                 diagram =
                     Result.map (\d -> Diagram.resize d wSize) model.diagram
             in
-                ( { model | diagram = diagram }, Cmd.none )
+            ( { model | diagram = diagram }, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
@@ -95,23 +95,32 @@ keyCodes : Dict.Dict Int Msg
 keyCodes =
     Dict.fromList
         [ ( 36, Start )
-          -- home
+
+        -- home
         , ( 32, Next )
-          -- space
+
+        -- space
         , ( 39, Next )
-          -- arrow right
+
+        -- arrow right
         , ( 82, Start )
-          -- r for rewind
+
+        -- r for rewind
         , ( 83, Start )
-          -- s for start
+
+        -- s for start
         , ( 68, Next )
-          -- d
+
+        -- d
         , ( 78, Next )
-          -- n
+
+        -- n
         , ( 37, Previous )
-          -- arrow left
+
+        -- arrow left
         , ( 80, Previous )
-          -- p
+
+        -- p
         ]
 
 
@@ -124,7 +133,7 @@ keyPressDispatcher keyCode =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Keyboard.ups (keyPressDispatcher)
+        [ Keyboard.ups keyPressDispatcher
         , Window.resizes WindowResizes
         ]
 
@@ -143,7 +152,7 @@ init diagram location =
         model =
             Model diagram flowStack
     in
-        ( model, Cmd.none )
+    ( model, Cmd.none )
 
 
 view : Model -> Html Msg
@@ -245,13 +254,13 @@ texts =
                 , Html.p [] [ Html.text "Store at backend" ]
                 ]
     in
-        [ ( "start", startText )
-        , ( "first", firstText )
-        , ( "second", secondText )
-        , ( "async", asyncText )
-        , ( "sync", syncText )
-        ]
-            |> Dict.fromList
+    [ ( "start", startText )
+    , ( "first", firstText )
+    , ( "second", secondText )
+    , ( "async", asyncText )
+    , ( "sync", syncText )
+    ]
+        |> Dict.fromList
 
 
 viewDiagram : Model -> Html Msg

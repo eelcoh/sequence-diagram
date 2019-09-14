@@ -1,4 +1,4 @@
-module Diagram.Internal.Compile.NamedSequences exposing (..)
+module Diagram.Internal.Compile.NamedSequences exposing (error, get)
 
 import Diagram.Internal.Types exposing (..)
 import Dict

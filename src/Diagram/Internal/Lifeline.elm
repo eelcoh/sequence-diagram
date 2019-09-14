@@ -1,16 +1,15 @@
-module Diagram.Internal.Lifeline
-    exposing
-        ( findIndex
-        , lookUp
-        , update
-        , getDirection
-        , toInt
-        , toFloat
-        , toString
-        , lifeline
-        )
+module Diagram.Internal.Lifeline exposing
+    ( findIndex
+    , getDirection
+    , lifeline
+    , lookUp
+    , toFloat
+    , toInt
+    , toString
+    , update
+    )
 
-import Diagram.Internal.Types exposing (Direction(..), Identifier(..), Lifeline, LifelineIdx, LifelineIdx(..), Participant(..), X(..))
+import Diagram.Internal.Types exposing (Direction(..), Identifier(..), Lifeline, LifelineIdx(..), Participant(..), X(..))
 import List.Extra as Extra exposing (getAt, setAt)
 
 
@@ -18,7 +17,7 @@ lifeline : ( Int, Participant ) -> Lifeline
 lifeline ( idx, participant ) =
     { participant = participant
     , layers = []
-    , idx = (LifelineIdx idx)
+    , idx = LifelineIdx idx
     }
 
 
@@ -61,7 +60,7 @@ update lifelines (LifelineIdx l) lifeline =
 
 getDirection : LifelineIdx -> LifelineIdx -> Direction
 getDirection (LifelineIdx l1) (LifelineIdx l2) =
-    case (compare l1 l2) of
+    case compare l1 l2 of
         GT ->
             RightToLeft
 
@@ -84,7 +83,7 @@ toFloat (LifelineIdx x) =
 
 toString : LifelineIdx -> String
 toString (LifelineIdx x) =
-    "L" ++ (Basics.toString x)
+    "L" ++ Basics.toString x
 
 
 

@@ -1,12 +1,11 @@
-module Diagram.Internal.Compile.Sequence
-    exposing
-        ( getLifelineIdx
-        , getIdentifier
-        )
+module Diagram.Internal.Compile.Sequence exposing
+    ( getIdentifier
+    , getLifelineIdx
+    )
 
+import Diagram.Internal.Compile.NamedSequences as Named
 import Diagram.Internal.Lifeline as Lifeline
 import Diagram.Internal.Types exposing (..)
-import Diagram.Internal.Compile.NamedSequences as Named
 
 
 getLifelineIdx : List Lifeline -> NamedSequences -> Sequence -> Result Errors LifelineIdx
@@ -21,8 +20,8 @@ getLifelineIdx lifelines namedSequences sequence =
                 ++ i
                 |> List.singleton
     in
-        getIdentifier namedSequences sequence
-            |> Result.andThen findIndex
+    getIdentifier namedSequences sequence
+        |> Result.andThen findIndex
 
 
 getIdentifier : NamedSequences -> Sequence -> Result Errors Identifier

@@ -1,12 +1,11 @@
-module Diagram.Internal.Layer
-    exposing
-        ( registerSession
-        , toFloat
-        )
+module Diagram.Internal.Layer exposing
+    ( registerSession
+    , toFloat
+    )
 
 import Diagram.Internal.Lifeline as Lifeline
 import Diagram.Internal.Range as Range
-import Diagram.Internal.Types exposing (Layer(..), LayerIdx, Lifeline, LifelineIdx(..), Overlap(..), Session(..), Range, X(..))
+import Diagram.Internal.Types exposing (Layer(..), LayerIdx, Lifeline, LifelineIdx(..), Overlap(..), Range, Session(..), X(..))
 import Diagram.Internal.X as X
 
 
@@ -40,16 +39,16 @@ addSessionToLayers session layers ((X l) as layerIdx) =
             List.singleton session
                 |> Layer
                 |> List.singleton
-                |> (,) layerIdx
+                |> (\b -> ( layerIdx, b ))
 
         x :: xs ->
-            case (addSessionToLayer session x) of
+            case addSessionToLayer session x of
                 Nothing ->
                     let
                         ( newLayerIdx, newLayers ) =
                             addSessionToLayers session xs (X (l + 1))
                     in
-                        ( newLayerIdx, (x :: newLayers) )
+                    ( newLayerIdx, x :: newLayers )
 
                 Just layer ->
                     ( layerIdx, List.singleton layer )
@@ -68,7 +67,7 @@ addSessionToLayerSessions session sessions =
             Just (List.singleton session)
 
         x :: xs ->
-            case (Range.overlap x session) of
+            case Range.overlap x session of
                 After ->
                     Just (session :: sessions)
 
@@ -86,7 +85,7 @@ updateLifelines lifelines lifelineIdx ( layer, lifeline ) =
         mNewLifelines =
             Lifeline.update lifelines lifelineIdx lifeline
     in
-        Maybe.map ((,) layer) mNewLifelines
+    Maybe.map (\b -> ( layer, b )) mNewLifelines
 
 
 toFloat : LayerIdx -> Float

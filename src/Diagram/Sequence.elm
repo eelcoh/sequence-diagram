@@ -1,18 +1,18 @@
-module Diagram.Sequence
-    exposing
-        ( sequence
-        , sync
-        , async
-        , refSync
-        , Sequence
-        )
+module Diagram.Sequence exposing
+    ( sequence, sync, async, refSync
+    , Sequence
+    )
 
 {-| Create a sequence diagram in Elm.
 
+
 # Sequence buiders
+
 @docs sequence, sync, async, refSync
 
+
 # Data
+
 @docs Sequence
 
 -}
@@ -55,6 +55,7 @@ async participant attributes steps =
 reuse sequences.
 
 The referred sequences will not be included directly, but will be used by zooming in.
+
 -}
 refSync : String -> List Attribute -> Sequence
 refSync sequenceName attributes =

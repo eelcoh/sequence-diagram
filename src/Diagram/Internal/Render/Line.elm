@@ -1,10 +1,10 @@
 module Diagram.Internal.Render.Line exposing (draw)
 
-import Svg
-import Svg.Attributes as SvgA
+import Diagram.Internal.Render.Colour as Colour
 import Diagram.Internal.Render.Point exposing (..)
 import Diagram.Internal.Types exposing (..)
-import Diagram.Internal.Render.Colour as Colour
+import Svg
+import Svg.Attributes as SvgA
 
 
 draw : Config -> Line -> Svg.Svg msg
@@ -26,7 +26,7 @@ fullLine config { coordinates, attributes, active } =
         attrs =
             lineAttributes config attributes coordinates active
     in
-        (getLineFn coordinates) attrs []
+    getLineFn coordinates attrs []
 
 
 dashedLine : Config -> Line -> Svg.Svg msg
@@ -36,7 +36,7 @@ dashedLine config { coordinates, attributes, active } =
             lineAttributes config attributes coordinates active
                 |> dashIt
     in
-        (getLineFn coordinates) attrs []
+    getLineFn coordinates attrs []
 
 
 longDashedLine : Config -> Line -> Svg.Svg msg
@@ -46,7 +46,7 @@ longDashedLine config { coordinates, attributes, active } =
             lineAttributes config attributes coordinates active
                 |> longDashIt
     in
-        (getLineFn coordinates) attrs []
+    getLineFn coordinates attrs []
 
 
 getLineFn : LineCoordinates -> (List (Svg.Attribute msg) -> List (Svg.Svg msg) -> Svg.Svg msg)
@@ -71,7 +71,7 @@ lineAttributes config attrs ({ start, between, end } as coordinates) active =
                 linePoints =
                     coordinatesToAttrs coordinates
             in
-                linePoints :: (lineStyle attrs active)
+            linePoints :: lineStyle attrs active
 
 
 lineStyle : List Attribute -> Show -> List (Svg.Attribute msg)
@@ -91,11 +91,11 @@ lineAttrs p1 p2 =
         ( x2, y2 ) =
             coordsToString p2
     in
-        [ SvgA.x1 x1
-        , SvgA.y1 y1
-        , SvgA.x2 x2
-        , SvgA.y2 y2
-        ]
+    [ SvgA.x1 x1
+    , SvgA.y1 y1
+    , SvgA.x2 x2
+    , SvgA.y2 y2
+    ]
 
 
 
@@ -108,12 +108,12 @@ lineAttrs p1 p2 =
 
 dashIt : List (Svg.Attribute msg) -> List (Svg.Attribute msg)
 dashIt attrs =
-    (SvgA.strokeDasharray "3, 1") :: attrs
+    SvgA.strokeDasharray "3, 1" :: attrs
 
 
 longDashIt : List (Svg.Attribute msg) -> List (Svg.Attribute msg)
 longDashIt attrs =
-    (SvgA.strokeDasharray "2, 2") :: attrs
+    SvgA.strokeDasharray "2, 2" :: attrs
 
 
 pointsToAttrs : List Point -> Svg.Attribute msg
