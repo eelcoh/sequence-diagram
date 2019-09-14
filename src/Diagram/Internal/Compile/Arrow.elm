@@ -1,11 +1,9 @@
-module Diagram.Internal.Compile.Arrow
-    exposing
-        ( create
-        )
+module Diagram.Internal.Compile.Arrow exposing (create)
 
 import Diagram.Internal.Compile.Coordinate exposing (..)
 import Diagram.Internal.Compile.Types exposing (ArrowTempData)
 import Diagram.Internal.Types exposing (..)
+
 
 
 -- constructor functions
@@ -50,7 +48,7 @@ create attrs xStart yStart xEnd yEnd arrowTempData =
             , direction = arrowTempData.direction
             }
     in
-        Arrow arrowTempData.attributes details
+    Arrow arrowTempData.attributes details
 
 
 

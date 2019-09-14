@@ -1,13 +1,10 @@
-module Diagram.Internal.Render.Arrow
-    exposing
-        ( view
-        )
+module Diagram.Internal.Render.Arrow exposing (view)
 
-import Diagram.Internal.Types exposing (..)
-import Diagram.Internal.Render.Line as Line
-import Diagram.Internal.Render.Colour as Colour
 import Diagram.Internal.Attribute as Attributes
+import Diagram.Internal.Render.Colour as Colour
+import Diagram.Internal.Render.Line as Line
 import Diagram.Internal.Render.Point as Point
+import Diagram.Internal.Types exposing (..)
 import Svg exposing (Svg)
 import Svg.Attributes as SvgA
 
@@ -54,17 +51,17 @@ view config active (Arrow attrs arrowDetails) =
         attributes =
             [ SvgA.textAnchor anchor ]
     in
-        Svg.g [ SvgA.textAnchor anchor ]
-            figures
+    Svg.g [ SvgA.textAnchor anchor ]
+        figures
 
 
 viewArrowCaption : Config -> Show -> List Attribute -> ArrowDetails -> Point -> Point -> String -> Svg msg
-viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 y2) caption =
+viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 y2) cpt =
     let
         ty =
             ((y1 + y2) / 2)
                 + yOffset
-                |> toString
+                |> String.fromFloat
 
         yOffset =
             case direction of
@@ -77,7 +74,7 @@ viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 
         tx =
             (x1 + x2)
                 / 2
-                |> toString
+                |> String.fromFloat
 
         textColor =
             Colour.txt active
@@ -90,9 +87,9 @@ viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 
             , textColor
             ]
     in
-        Svg.text_
-            attrs
-            [ Svg.text caption ]
+    Svg.text_
+        attrs
+        [ Svg.text cpt ]
 
 
 viewArrowHead : Config -> Show -> List Attribute -> ArrowDetails -> Point -> Svg msg
@@ -121,8 +118,8 @@ viewArrowHead config active attributes { arrowType, direction } (Point x y) =
                 ToSelf ->
                     x + szX
 
-        pt ( x, y ) =
-            String.join "," [ (toString x), (toString y) ]
+        pt ( a, b ) =
+            String.join "," [ String.fromFloat a, String.fromFloat b ]
 
         pts =
             List.map pt [ ( x_, y1 ), ( x, y ), ( x_, y2 ) ]
@@ -149,9 +146,9 @@ viewArrowHead config active attributes { arrowType, direction } (Point x y) =
             , fill
             ]
     in
-        figure
-            attrs
-            []
+    figure
+        attrs
+        []
 
 
 
@@ -187,10 +184,10 @@ calcLine ({ width, unitV, unitH, layerOffset } as config) { start, end, arrowTyp
                             , Point.point config end SelfDown
                             )
             in
-                { start = Point.point config start RightSide
-                , between = Just between
-                , end = Point.point config end RightSide
-                }
+            { start = Point.point config start RightSide
+            , between = Just between
+            , end = Point.point config end RightSide
+            }
 
 
 caption : List Attribute -> ArrowDetails -> Maybe String

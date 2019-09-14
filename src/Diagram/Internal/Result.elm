@@ -1,4 +1,4 @@
-module Diagram.Internal.Result exposing (..)
+module Diagram.Internal.Result exposing (errors, merge, oks)
 
 import Diagram.Internal.Types exposing (Errors)
 
@@ -21,10 +21,10 @@ oks results =
             []
 
         (Ok a) :: res ->
-            a :: (oks res)
+            a :: oks res
 
         (Err e) :: res ->
-            (oks res)
+            oks res
 
 
 errors : List (Result Errors a) -> Errors
@@ -37,4 +37,4 @@ errors results =
             errors res
 
         (Err e) :: res ->
-            e ++ (errors res)
+            e ++ errors res

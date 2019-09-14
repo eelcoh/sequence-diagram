@@ -1,10 +1,10 @@
-module Sequences exposing (..)
+module Navigate.Sequences exposing (create)
 
+import Color
 import Diagram exposing (Diagram, Errors)
+import Diagram.Attribute exposing (backgroundColour, caption, id, return, textColour)
 import Diagram.Participant exposing (person, system)
 import Diagram.Sequence exposing (async, refSync, sequence, sync)
-import Diagram.Attribute exposing (id, backgroundColour, caption, return, textColour)
-import Color
 
 
 create : Result Errors Diagram
@@ -57,4 +57,4 @@ create =
                 , sync "backend" [ id "11", caption "backend call" ] []
                 ]
     in
-        Diagram.create participants seq [ ( "seq2", seq2 ) ]
+    Diagram.create participants seq [ ( "seq2", seq2 ) ]

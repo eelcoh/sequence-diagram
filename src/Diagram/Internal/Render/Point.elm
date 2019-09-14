@@ -1,4 +1,4 @@
-module Diagram.Internal.Render.Point exposing (..)
+module Diagram.Internal.Render.Point exposing (coordsToString, offset, point, pointToString)
 
 import Diagram.Internal.Layer as Layer
 import Diagram.Internal.Render.Config exposing (calculateBase)
@@ -10,17 +10,17 @@ pointToString : Point -> String
 pointToString (Point x1 y1) =
     let
         x =
-            toString x1
+            String.fromFloat x1
 
         y =
-            toString y1
+            String.fromFloat y1
     in
-        String.join "," [ x, y ]
+    String.join "," [ x, y ]
 
 
 coordsToString : Point -> ( String, String )
 coordsToString (Point x y) =
-    ( (toString x), (toString y) )
+    ( String.fromFloat x, String.fromFloat y )
 
 
 offset : Config -> Side -> Float
@@ -52,20 +52,15 @@ point ({ unitV, unitH, layerOffset } as config) { lifelineIdx, layerIdx, y } sid
             offset config side
 
         xLayer =
-            (Layer.toFloat layerIdx) * layerOffset
+            Layer.toFloat layerIdx * layerOffset
 
         px =
             xLifeline + xLayer + offsetH
 
         py =
-            (Y.toFloat y) * unitV
+            Y.toFloat y * unitV
     in
-        Point px py
-
-
-stringify : Rectangle -> ( String, String, String, String )
-stringify ( a, b, c, d ) =
-    ( toString a, toString b, toString c, toString d )
+    Point px py
 
 
 

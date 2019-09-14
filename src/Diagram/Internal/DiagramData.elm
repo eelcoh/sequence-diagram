@@ -1,12 +1,11 @@
-module Diagram.Internal.DiagramData exposing (..)
+module Diagram.Internal.DiagramData exposing (create)
 
-{-|
-  Initialise the diagram.
+{-| Initialise the diagram.
 -}
 
 import Diagram.Internal.Compile exposing (compile)
 import Diagram.Internal.Participant as Participant
-import Diagram.Internal.Types as Types exposing (DiagramData, Errors, Model, Participant, Sequence, Size, NamedSequences)
+import Diagram.Internal.Types as Types exposing (DiagramData, Errors, Model, NamedSequences, Participant, Sequence, Size)
 import List exposing (all)
 
 
@@ -16,10 +15,10 @@ create participants namedSequences sequence =
         rCompiled =
             Participant.getIdentifiers namedSequences sequence
                 |> Result.map (Participant.merge participants)
-                |> Result.map (List.indexedMap (,))
+                |> Result.map (List.indexedMap (\a b -> ( a, b )))
                 |> Result.andThen (\p -> compile p sequence namedSequences)
 
         createData ( lifelines, session ) =
             DiagramData lifelines session
     in
-        Result.map createData rCompiled
+    Result.map createData rCompiled

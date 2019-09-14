@@ -1,11 +1,10 @@
-module Diagram.Internal.Y
-    exposing
-        ( compare
-        , add
-        , toString
-        , toInt
-        , toFloat
-        )
+module Diagram.Internal.Y exposing
+    ( add
+    , compare
+    , toFloat
+    , toInt
+    , toString
+    )
 
 import Diagram.Internal.Types exposing (Y(..))
 
@@ -22,7 +21,7 @@ add (Y y1) (Y y2) =
 
 toString : Y -> String
 toString (Y y) =
-    "Y" ++ (Basics.toString y)
+    "Y" ++ String.fromInt y
 
 
 toInt : Y -> Int

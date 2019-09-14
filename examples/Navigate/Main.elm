@@ -1,15 +1,15 @@
-module Main exposing (..)
+module Navigate.Main exposing (main)
 
+import Browser
+import Browser.Events as Window
+import Browser.Navigation as Navigation
 import Diagram exposing (Diagram, Errors)
-import Diagram.Internal.Render.Config exposing (calculateBase)
 import Diagram.Navigate exposing (first, full, next, prev, rewind, zoom, zoomOut)
 import Dict
 import Html exposing (Html)
 import Html.Attributes exposing (style)
-import Keyboard
-import Navigation
-import Sequences
-import Window
+import Json.Decode as Decode exposing (Value)
+import Navigate.Sequences as Sequences
 
 
 type alias Model =
@@ -25,8 +25,7 @@ type Msg
     | End
     | Zoom
     | ZoomOut
-    | NewLocation Navigation.Location
-    | WindowResizes Window.Size
+    | WindowResizes Int Int
     | NoOp
 
 
@@ -51,7 +50,7 @@ update msg model =
         ZoomOut ->
             apply zoomOut model
 
-        WindowResizes windowSize ->
+        WindowResizes w h ->
             let
                 calcSize i =
                     toFloat i
@@ -59,20 +58,17 @@ update msg model =
                         |> floor
 
                 newWidth =
-                    calcSize windowSize.width
+                    calcSize w
 
                 newSize =
-                    { windowSize | width = newWidth }
+                    { width = newWidth, height = h }
 
                 newDiagram =
-                    Result.map (\d -> (Diagram.resize d newSize)) model.diagram
+                    Result.map (\d -> Diagram.resize d newSize) model.diagram
             in
-                ( { model | diagram = newDiagram }, Cmd.none )
+            ( { model | diagram = newDiagram }, Cmd.none )
 
         NoOp ->
-            ( model, Cmd.none )
-
-        NewLocation _ ->
             ( model, Cmd.none )
 
 
@@ -90,85 +86,113 @@ apply f model =
                 Ok ( mCurrentId, diagram ) ->
                     Model (Ok diagram) mCurrentId
     in
-        ( newModel, Cmd.none )
+    ( newModel, Cmd.none )
 
 
-keyCodes : Dict.Dict Int Msg
-keyCodes =
-    Dict.fromList
-        [ ( 36, Start )
-          -- home
-        , ( 35, End )
-          -- end
-        , ( 13, Next )
-          -- return
-        , ( 32, Next )
-          -- space
-        , ( 39, Next )
-          -- arrow right
-        , ( 76, End )
-          -- l
-        , ( 82, Start )
-          -- r for rewind
-        , ( 83, Start )
-          -- s for start
-        , ( 68, Next )
-          -- d
-        , ( 70, End )
-          -- f
-        , ( 37, Previous )
-          -- arrow left
-        , ( 78, Next )
-          -- n
-        , ( 80, Previous )
-          -- p
-        , ( 72, Previous )
-          -- h
-        , ( 90, Zoom )
-          -- z
-        , ( 27, ZoomOut )
-          -- Escape
-        , ( 79, ZoomOut )
-          -- o
-        ]
+keyDecoder : Decode.Decoder Msg
+keyDecoder =
+    Decode.map keyToMsg (Decode.field "key" Decode.string)
 
 
-keyPressDispatcher : Int -> Msg
-keyPressDispatcher keyCode =
-    Dict.get keyCode keyCodes
-        |> Maybe.withDefault NoOp
+keyToMsg : String -> Msg
+keyToMsg string =
+    case Debug.log "key" string of
+        "ArrowLeft" ->
+            Previous
+
+        "p" ->
+            Previous
+
+        "ArrowRight" ->
+            Next
+
+        "r" ->
+            -- rewind
+            Start
+
+        "s" ->
+            Start
+
+        " " ->
+            Next
+
+        "Home" ->
+            Start
+
+        "End" ->
+            End
+
+        "Return" ->
+            Next
+
+        "l" ->
+            End
+
+        "d" ->
+            Next
+
+        "f" ->
+            Previous
+
+        "n" ->
+            Next
+
+        "h" ->
+            Previous
+
+        "z" ->
+            Zoom
+
+        "Escape" ->
+            ZoomOut
+
+        "o" ->
+            ZoomOut
+
+        _ ->
+            NoOp
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Keyboard.ups (keyPressDispatcher)
-        , Window.resizes WindowResizes
+        [ Window.onKeyUp keyDecoder
+        , Window.onResize WindowResizes
         ]
 
 
-init : Result Errors Diagram -> Navigation.Location -> ( Model, Cmd Msg )
-init diagram location =
+init : Result Errors Diagram -> Value -> ( Model, Cmd Msg )
+init diagram _ =
     let
         model =
             Model diagram Nothing
     in
-        ( model, Cmd.none )
+    ( model, Cmd.none )
 
 
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    Html.div []
-        [ Html.div [ containerStyle ]
-            [ Html.div [ explanationStyle ] [ viewExplanation model ]
-            , Html.div [ diagramStyle ] [ viewDiagram model ]
+    let
+        body =
+            [ Html.div containerStyle
+                [ Html.div explanationStyle [ viewExplanation model ]
+                , Html.div diagramStyle [ viewDiagram model ]
+                ]
             ]
-        ]
+    in
+    { title = "Sequence Diagram Example"
+    , body = body
+    }
 
 
-containerStyle : Html.Attribute msg
+styles : List ( String, String ) -> List (Html.Attribute msg)
+styles =
+    List.map (\( k, v ) -> style k v)
+
+
+containerStyle : List (Html.Attribute msg)
 containerStyle =
-    style
+    styles
         [ ( "display", "flex" )
         , ( "flex-flow", "row wrap" )
         , ( "justify-content", "space-around" )
@@ -177,17 +201,17 @@ containerStyle =
         ]
 
 
-explanationStyle : Html.Attribute msg
+explanationStyle : List (Html.Attribute msg)
 explanationStyle =
-    style
+    styles
         [ ( "order", "1" )
         , ( "width", "40%" )
         ]
 
 
-diagramStyle : Html.Attribute msg
+diagramStyle : List (Html.Attribute msg)
 diagramStyle =
-    style
+    styles
         [ ( "order", "2" )
         , ( "width", "50%" )
         , ( "margin-top", "40px" )
@@ -258,13 +282,13 @@ texts =
                 , Html.p [] [ Html.text "Store at backend" ]
                 ]
     in
-        [ ( "start", startText )
-        , ( "first", firstText )
-        , ( "second", secondText )
-        , ( "async", asyncText )
-        , ( "sync", syncText )
-        ]
-            |> Dict.fromList
+    [ ( "start", startText )
+    , ( "first", firstText )
+    , ( "second", secondText )
+    , ( "async", asyncText )
+    , ( "sync", syncText )
+    ]
+        |> Dict.fromList
 
 
 viewDiagram : Model -> Html Msg
@@ -286,10 +310,9 @@ viewError error =
     Html.li [] [ Html.text error ]
 
 
-app : Result Errors Diagram -> Program Never Model Msg
+app : Result Errors Diagram -> Program Value Model Msg
 app rDiagram =
-    Navigation.program
-        NewLocation
+    Browser.document
         { init = init rDiagram
         , update = update
         , view = view
@@ -297,6 +320,6 @@ app rDiagram =
         }
 
 
-main : Program Never Model Msg
+main : Program Value Model Msg
 main =
     app Sequences.create

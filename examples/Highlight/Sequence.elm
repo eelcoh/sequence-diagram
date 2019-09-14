@@ -1,10 +1,10 @@
-module Sequence exposing (..)
+module Highlight.Sequence exposing (create)
 
+import Color
 import Diagram exposing (Diagram, Errors)
+import Diagram.Attribute exposing (backgroundColour, caption, return, tag, textColour)
 import Diagram.Participant exposing (person, system)
 import Diagram.Sequence exposing (async, refSync, sequence, sync)
-import Diagram.Attribute exposing (tag, backgroundColour, caption, return, textColour)
-import Color
 
 
 create : Result Errors Diagram
@@ -49,4 +49,4 @@ create =
                     ]
                 ]
     in
-        Diagram.create participants seq []
+    Diagram.create participants seq []

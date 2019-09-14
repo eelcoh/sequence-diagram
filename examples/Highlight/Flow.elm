@@ -1,4 +1,4 @@
-module Flow exposing (FlowStack, next, prev, current, init)
+module Highlight.Flow exposing (FlowStack, current, init, next, prev)
 
 
 type alias FlowStack =
@@ -22,43 +22,43 @@ current flowStack =
 
 
 next : FlowStack -> FlowStack
-next ({ prev, current, next } as flowStack) =
-    case current of
+next flowStack =
+    case flowStack.current of
         Nothing ->
-            case pop next of
+            case pop flowStack.next of
                 Nothing ->
                     flowStack
 
                 Just ( t, ts ) ->
-                    FlowStack prev (Just t) ts
+                    FlowStack flowStack.prev (Just t) ts
 
         Just c ->
-            case pop next of
+            case pop flowStack.next of
                 Nothing ->
-                    FlowStack (c :: prev) Nothing []
+                    FlowStack (c :: flowStack.prev) Nothing []
 
                 Just ( t, ts ) ->
-                    FlowStack (c :: prev) (Just t) ts
+                    FlowStack (c :: flowStack.prev) (Just t) ts
 
 
 prev : FlowStack -> FlowStack
-prev ({ prev, current, next } as flowStack) =
-    case current of
+prev flowStack =
+    case flowStack.current of
         Nothing ->
-            case pop prev of
+            case pop flowStack.prev of
                 Nothing ->
                     flowStack
 
                 Just ( t, ts ) ->
-                    FlowStack ts (Just t) next
+                    FlowStack ts (Just t) flowStack.next
 
         Just c ->
-            case pop prev of
+            case pop flowStack.prev of
                 Nothing ->
-                    FlowStack [] Nothing (c :: prev)
+                    FlowStack [] Nothing (c :: flowStack.prev)
 
                 Just ( t, ts ) ->
-                    FlowStack ts (Just t) (c :: next)
+                    FlowStack ts (Just t) (c :: flowStack.next)
 
 
 pop : List a -> Maybe ( a, List a )

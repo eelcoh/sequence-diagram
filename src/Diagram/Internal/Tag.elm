@@ -1,4 +1,4 @@
-module Diagram.Internal.Tag exposing (..)
+module Diagram.Internal.Tag exposing (hasTag, hasTags)
 
 
 hasTags : List String -> List String -> Bool

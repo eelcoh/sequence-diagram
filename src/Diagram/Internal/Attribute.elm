@@ -1,8 +1,8 @@
-module Diagram.Internal.Attribute exposing (..)
+module Diagram.Internal.Attribute exposing (add, addOne, getBackgroundColour, getCaption, getId, getLineColour, getReturnCaption, getTags, getTextColour, none, toAttribute)
 
 import Color exposing (Color)
-import Color.Convert exposing (colorToHex)
 import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Utils.Color exposing (colorToHex)
 import Svg
 import Svg.Attributes exposing (color, cx, fill, stroke)
 
@@ -18,8 +18,8 @@ getCaption attributes =
                 _ ->
                     Nothing
     in
-        List.filterMap isCaption attributes
-            |> List.head
+    List.filterMap isCaption attributes
+        |> List.head
 
 
 getReturnCaption : List Attribute -> Maybe String
@@ -33,8 +33,8 @@ getReturnCaption attributes =
                 _ ->
                     Nothing
     in
-        List.filterMap isReturnCaption attributes
-            |> List.head
+    List.filterMap isReturnCaption attributes
+        |> List.head
 
 
 getTextColour : List Attribute -> Maybe Color
@@ -48,8 +48,8 @@ getTextColour attributes =
                 _ ->
                     Nothing
     in
-        List.filterMap isTextColour attributes
-            |> List.head
+    List.filterMap isTextColour attributes
+        |> List.head
 
 
 getBackgroundColour : List Attribute -> Maybe Color
@@ -63,8 +63,8 @@ getBackgroundColour attributes =
                 _ ->
                     Nothing
     in
-        List.filterMap isBackgroundColour attributes
-            |> List.head
+    List.filterMap isBackgroundColour attributes
+        |> List.head
 
 
 getLineColour : List Attribute -> Maybe Color
@@ -78,8 +78,8 @@ getLineColour attributes =
                 _ ->
                     Nothing
     in
-        List.filterMap isLineColour attributes
-            |> List.head
+    List.filterMap isLineColour attributes
+        |> List.head
 
 
 getId : List Attribute -> Maybe String
@@ -93,8 +93,8 @@ getId attributes =
                 _ ->
                     Nothing
     in
-        List.filterMap isId attributes
-            |> List.head
+    List.filterMap isId attributes
+        |> List.head
 
 
 none : Attribute
@@ -108,12 +108,12 @@ none =
 
 add : List Attribute -> List (Svg.Attribute msg) -> List (Svg.Attribute msg)
 add newAttrs attrs =
-    (List.filterMap toAttribute newAttrs) ++ attrs
+    List.filterMap toAttribute newAttrs ++ attrs
 
 
 addOne : Attribute -> List (Svg.Attribute msg) -> List (Svg.Attribute msg)
 addOne attr attrs =
-    case (toAttribute attr) of
+    case toAttribute attr of
         Just a ->
             a :: attrs
 
@@ -154,4 +154,4 @@ getTags attrs =
                 _ ->
                     Nothing
     in
-        List.filterMap ifTag attrs
+    List.filterMap ifTag attrs

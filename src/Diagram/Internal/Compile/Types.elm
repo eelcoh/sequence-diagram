@@ -1,14 +1,13 @@
-module Diagram.Internal.Compile.Types
-    exposing
-        ( SessionPassOne(..)
-        , SessionPassTwo(..)
-        , ArrowMeta
-        , Arrows
-        , ArrowIn(..)
-        , ArrowOut(..)
-        , IncomingArrowType(..)
-        , ArrowTempData
-        )
+module Diagram.Internal.Compile.Types exposing
+    ( ArrowIn(..)
+    , ArrowMeta
+    , ArrowOut(..)
+    , ArrowTempData
+    , Arrows
+    , IncomingArrowType(..)
+    , SessionPassOne(..)
+    , SessionPassTwo(..)
+    )
 
 import Diagram.Internal.Types exposing (..)
 

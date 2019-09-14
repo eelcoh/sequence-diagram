@@ -1,4 +1,4 @@
-module Diagram.Internal.Participant exposing (..)
+module Diagram.Internal.Participant exposing (defaultParticipant, defaultParticipantStyle, exists, getIdentifierResults, getIdentifierResultsSingle, getIdentifiers, insert, merge, participant)
 
 import Color
 import Diagram.Attribute as Attributes
@@ -39,63 +39,63 @@ getIdentifierResults : NamedSequences -> Sequence -> List (Result Errors Identif
 getIdentifierResults namedSequences sequence =
     case sequence of
         Sequence identifier _ steps ->
-            (Ok identifier) :: List.concat (List.map (getIdentifierResults namedSequences) steps)
+            Ok identifier :: List.concat (List.map (getIdentifierResults namedSequences) steps)
 
         Synchronous identifier _ steps ->
-            (Ok identifier) :: List.concat (List.map (getIdentifierResults namedSequences) steps)
+            Ok identifier :: List.concat (List.map (getIdentifierResults namedSequences) steps)
 
         Asynchronous identifier _ steps ->
-            (Ok identifier) :: List.concat (List.map (getIdentifierResults namedSequences) steps)
+            Ok identifier :: List.concat (List.map (getIdentifierResults namedSequences) steps)
 
         RefSync (Identifier sequenceName) _ ->
             let
                 mSeq =
                     Dict.get sequenceName namedSequences
             in
-                case mSeq of
-                    Nothing ->
-                        let
-                            error =
-                                "Could not find sequence named "
-                                    ++ sequenceName
-                                    |> List.singleton
-                        in
-                            [ Err error ]
+            case mSeq of
+                Nothing ->
+                    let
+                        error =
+                            "Could not find sequence named "
+                                ++ sequenceName
+                                |> List.singleton
+                    in
+                    [ Err error ]
 
-                    Just seq ->
-                        getIdentifierResultsSingle namedSequences seq
-                            |> List.singleton
+                Just seq ->
+                    getIdentifierResultsSingle namedSequences seq
+                        |> List.singleton
 
 
 getIdentifierResultsSingle : NamedSequences -> Sequence -> Result Errors Identifier
 getIdentifierResultsSingle namedSequences sequence =
     case sequence of
         Sequence identifier _ steps ->
-            (Ok identifier)
+            Ok identifier
 
         Synchronous identifier _ steps ->
-            (Ok identifier)
+            Ok identifier
 
         Asynchronous identifier _ steps ->
-            (Ok identifier)
+            Ok identifier
 
         RefSync (Identifier sequenceName) _ ->
             let
                 mSeq =
                     Dict.get sequenceName namedSequences
             in
-                case mSeq of
-                    Nothing ->
-                        let
-                            error =
-                                "Could not find sequence named "
-                                    ++ sequenceName
-                                    |> List.singleton
-                        in
-                            Err error
+            case mSeq of
+                Nothing ->
+                    let
+                        error =
+                            "Could not find sequence named "
+                                ++ sequenceName
+                                |> List.singleton
+                    in
+                    Err error
 
-                    Just seq ->
-                        getIdentifierResultsSingle namedSequences seq
+                Just seq ->
+                    getIdentifierResultsSingle namedSequences seq
 
 
 merge : List Participant -> List Identifier -> List Participant
@@ -108,16 +108,17 @@ merge participants sParticipants =
         gParticipants =
             List.filter (\p -> List.any (equal p) sParticipants) participants
     in
-        List.foldr insert (List.reverse gParticipants) sParticipants
-            |> List.reverse
+    List.foldr insert (List.reverse gParticipants) sParticipants
+        |> List.reverse
 
 
 insert : Identifier -> List Participant -> List Participant
 insert participantIdentifier participants =
-    if (exists participants participantIdentifier) then
+    if exists participants participantIdentifier then
         participants
+
     else
-        (defaultParticipant participantIdentifier) :: participants
+        defaultParticipant participantIdentifier :: participants
 
 
 exists : List Participant -> Identifier -> Bool
@@ -127,7 +128,8 @@ exists participants participantIdentifier =
             False
 
         (Participant identifier _) :: rest ->
-            if (identifier == participantIdentifier) then
+            if identifier == participantIdentifier then
                 True
+
             else
                 exists rest participantIdentifier

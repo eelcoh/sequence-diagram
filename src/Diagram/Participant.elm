@@ -1,16 +1,18 @@
-module Diagram.Participant
-    exposing
-        ( person
-        , system
-        , Participant
-        )
+module Diagram.Participant exposing
+    ( person, system
+    , Participant
+    )
 
 {-| Create a sequence diagram in Elm.
 
+
 # Participant builders
+
 @docs person, system
 
+
 # Data
+
 @docs Participant
 
 -}

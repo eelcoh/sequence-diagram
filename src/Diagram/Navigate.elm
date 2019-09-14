@@ -1,29 +1,21 @@
-module Diagram.Navigate
-    exposing
-        ( first
-        , next
-        , prev
-        , rewind
-        , full
-        , zoom
-        , zoomOut
-        )
+module Diagram.Navigate exposing (first, next, prev, rewind, full, zoom, zoomOut)
 
 {-| Navigate through a sequence diagram in Elm.
 
+
 # Navigate the diagram
+
 @docs first, next, prev, rewind, full, zoom, zoomOut
 
 -}
 
 import Diagram.Internal.Model as Model
-import Diagram.Internal.Types as Types exposing (Model, Identifier(..))
 import Diagram.Internal.Session as Session
+import Diagram.Internal.Types as Types exposing (Identifier(..), Model)
 import Dict
 
 
-{-|
-  Make the first session active, hide all others
+{-| Make the first session active, hide all others
 -}
 first : Model -> ( Maybe String, Model )
 first model =
@@ -31,8 +23,7 @@ first model =
         |> addActiveId
 
 
-{-|
-  Move one up.
+{-| Move one up.
 -}
 prev : Model -> ( Maybe String, Model )
 prev model =
@@ -40,16 +31,14 @@ prev model =
         |> addActiveId
 
 
-{-|
-  Move back to the first
+{-| Move back to the first
 -}
 rewind : Model -> ( Maybe String, Model )
 rewind =
     first
 
 
-{-|
-  Go to the next session.
+{-| Go to the next session.
 -}
 next : Model -> ( Maybe String, Model )
 next model =
@@ -57,8 +46,7 @@ next model =
         |> addActiveId
 
 
-{-|
-  Set the full diagram visible
+{-| Set the full diagram visible
 -}
 full : Model -> ( Maybe String, Model )
 full model =
@@ -66,8 +54,7 @@ full model =
         |> addActiveId
 
 
-{-|
-  Zoom into the referred sequence.
+{-| Zoom into the referred sequence.
 -}
 zoom : Model -> ( Maybe String, Model )
 zoom model =
@@ -80,25 +67,24 @@ zoom model =
                 |> Maybe.map (\(Identifier i) -> i)
                 |> Maybe.andThen (\i -> Dict.get i model.sessionTable)
     in
-        case mData of
-            Nothing ->
-                model
-                    |> addActiveId
+    case mData of
+        Nothing ->
+            model
+                |> addActiveId
 
-            Just d ->
-                let
-                    newDiagram =
-                        d
+        Just d ->
+            let
+                newDiagram =
+                    d
 
-                    newStack =
-                        model.diagram :: model.stack
-                in
-                    { model | diagram = newDiagram, stack = newStack }
-                        |> full
+                newStack =
+                    model.diagram :: model.stack
+            in
+            { model | diagram = newDiagram, stack = newStack }
+                |> full
 
 
-{-|
-  Zoom out of the referred sequence.
+{-| Zoom out of the referred sequence.
 -}
 zoomOut : Model -> ( Maybe String, Model )
 zoomOut model =
@@ -116,7 +102,7 @@ addActiveId : Model -> ( Maybe String, Model )
 addActiveId model =
     Model.currentSession model
         |> Session.getCurrentActiveId
-        |> (flip (,)) model
+        |> (\b a -> (\a_ b_ -> ( a_, b_ )) a b) model
 
 
 

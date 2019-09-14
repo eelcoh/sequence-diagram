@@ -1,6 +1,7 @@
-module Diagram.Internal.Model exposing (..)
+module Diagram.Internal.Model exposing (create, currentSession, move)
 
-import Diagram.Internal.Types exposing (DiagramData, SessionTable, Config, Lifeline, Model, Session)
+import Diagram.Internal.Types exposing (Config, DiagramData, Lifeline, Model, Session, SessionTable)
+
 
 
 {-
@@ -33,7 +34,7 @@ move fn model =
         newDiagram =
             { current | session = newSession }
     in
-        { model | diagram = newDiagram }
+    { model | diagram = newDiagram }
 
 
 currentSession : Model -> Session

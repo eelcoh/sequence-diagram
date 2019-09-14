@@ -5,6 +5,7 @@ import Diagram.Internal.Render.Colour as Colour
 import Diagram.Internal.Render.Config exposing (calculateBase)
 import Diagram.Internal.Render.Line
 import Diagram.Internal.Render.Point as Point
+import Diagram.Internal.Render.Rectangle as Rectangle
 import Diagram.Internal.Types as Diagram exposing (..)
 import Maybe exposing (withDefault)
 import Svg exposing (..)
@@ -14,22 +15,22 @@ import Svg.Attributes as SvgA exposing (..)
 view : Config -> Int -> Lifeline -> Svg msg
 view config ln { participant, idx } =
     let
-        ( l, t, w, h ) =
+        (Rectangle l t w h) =
             getCoordinatesForComponent config idx
 
-        ( mt, tt, wt, ht ) =
-            ( l + (w / 2.0), t + (h / 2.0), w, h )
-                |> Point.stringify
+        (RectangleAsString mt tt wt ht) =
+            Rectangle (l + (w / 2.0)) (t + (h / 2.0)) w h
+                |> Rectangle.toString
 
-        ( lc, tc, wc, hc ) =
-            ( l, t, w, h )
-                |> Point.stringify
+        (RectangleAsString lc tc wc hc) =
+            Rectangle l t w h
+                |> Rectangle.toString
 
         yCenter =
             t + (h / 2.0)
 
         pt ( x, y ) =
-            String.join "," [ (toString x), (toString y) ]
+            String.join "," [ String.fromFloat x, String.fromFloat y ]
 
         pts cs =
             List.map pt cs
@@ -65,9 +66,9 @@ view config ln { participant, idx } =
                     , SvgA.cursor "pointer"
                     ]
             in
-                Svg.text_
-                    attrs
-                    [ Svg.text c ]
+            Svg.text_
+                attrs
+                [ Svg.text c ]
 
         thisComponent =
             let
@@ -78,12 +79,13 @@ view config ln { participant, idx } =
                     , SvgA.height hc
                     , SvgA.strokeWidth "0.2"
                     , backgroundColour
-                      --  , SvgA.pointerEvents "all"
+
+                    --  , SvgA.pointerEvents "all"
                     ]
             in
-                Svg.rect
-                    attrs
-                    []
+            Svg.rect
+                attrs
+                []
 
         ll =
             viewLifeline config (getAttributes participant) idx ln
@@ -95,8 +97,8 @@ view config ln { participant, idx } =
             , ll
             ]
     in
-        Svg.g [ SvgA.textAnchor "middle" ]
-            elements
+    Svg.g [ SvgA.textAnchor "middle" ]
+        elements
 
 
 getCoordinatesForComponent : Config -> LifelineIdx -> Rectangle
@@ -120,7 +122,7 @@ getCoordinatesForComponent config lifelineIdx =
         height =
             stepHeight * 1.6
     in
-        ( x, y, width, height )
+    Rectangle x y width height
 
 
 getCoordinatesForLifeline : Config -> LifelineIdx -> Int -> ( Point, Point )
@@ -136,9 +138,9 @@ getCoordinatesForLifeline config lifelineIdx ln =
             stepHeight * 1.6
 
         y2 =
-            y1 + (stepHeight * (Basics.toFloat ln))
+            y1 + (stepHeight * Basics.toFloat ln)
     in
-        ( (Point x y1), (Point x y2) )
+    ( Point x y1, Point x y2 )
 
 
 viewLifeline : Config -> List Diagram.Attribute -> LifelineIdx -> Int -> Svg msg
@@ -156,7 +158,7 @@ viewLifeline config attrs lifelineIdx lifelineLength =
         l =
             Line lc LongDash attrs Visible
     in
-        Diagram.Internal.Render.Line.draw config l
+    Diagram.Internal.Render.Line.draw config l
 
 
 getAttributes : Participant -> List Diagram.Attribute
