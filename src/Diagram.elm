@@ -35,7 +35,7 @@ import List exposing (all)
 import Result.Extra as ResultX
 import Svg
 import Svg.Attributes as SvgA
-
+ 
 
 {-| The model of the diagram
 -}

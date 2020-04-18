@@ -5,17 +5,20 @@ import Diagram.Navigate exposing (first, full, next, prev, rewind, zoom, zoomOut
 import Dict
 import Html exposing (Html)
 import Html.Attributes exposing (style)
-import Keyboard
-import Navigation
+import Browser.Events as Events
 import Sequences
-import Window
 
+import Browser
 
 type alias Model =
     { diagram : Result Errors Diagram
     , activeId : Maybe String
     }
 
+type alias WindowSize = 
+    { w : Int
+    , h: Int
+    }
 
 type Msg
     = Start
@@ -25,7 +28,7 @@ type Msg
     | Zoom
     | ZoomOut
     | NewLocation Navigation.Location
-    | WindowResizes Window.Size
+    | WindowResizes WindowSize
     | NoOp
 
 
@@ -171,8 +174,8 @@ keyPressDispatcher keyCode =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Keyboard.ups keyPressDispatcher
-        , Window.resizes WindowResizes
+        [ Events.onKeyUp keyPressDispatcher
+        , Events.onResize WindowResizes
         ]
 
 
@@ -355,6 +358,5 @@ app rDiagram =
         }
 
 
-main : Program Never Model Msg
 main =
     app Sequences.create
