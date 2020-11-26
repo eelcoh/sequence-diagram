@@ -47,22 +47,22 @@ viewSession config (Session hash attributes active model ( mArrowIn, mArrowOut )
         top =
             toFloat model.start
                 * config.unitV
-                |> toString
+                |> String.fromFloat
 
         height =
             (toFloat model.end - toFloat model.start)
                 * config.unitV
-                |> toString
+                |> String.fromFloat
 
         left =
             base
                 - (config.unitH * 0.5)
                 + (toFloat model.layerIdx * config.layerOffset)
-                |> toString
+                |> String.fromFloat
 
         width =
             config.unitH
-                |> toString
+                |> String.fromFloat
 
         ( fill, line ) =
             case active of
