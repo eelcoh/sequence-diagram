@@ -17,10 +17,10 @@ empty =
 registerSession : Range -> LifelineIdx -> List Lifeline -> Maybe ( LayerIdx, List Lifeline )
 registerSession session lifeline lifelines =
     Lifeline.lookUp lifelines lifeline
-        |> Maybe.andThen (addSessionToLifeline session lifeline lifelines)
+        |> Maybe.map (addSessionToLifeline session lifeline lifelines)
 
 
-addSessionToLifeline : Range -> LifelineIdx -> List Lifeline -> Lifeline -> Maybe ( LayerIdx, List Lifeline )
+addSessionToLifeline : Range -> LifelineIdx -> List Lifeline -> Lifeline -> ( LayerIdx, List Lifeline )
 addSessionToLifeline session lifelineIdx lifelines ({ layers } as lifeline) =
     addSessionToLayers session layers (X 0)
         |> updateComponent lifeline
@@ -79,13 +79,14 @@ addSessionToLayerSessions session sessions =
                     Nothing
 
 
-updateLifelines : List Lifeline -> LifelineIdx -> ( LayerIdx, Lifeline ) -> Maybe ( LayerIdx, List Lifeline )
+updateLifelines : List Lifeline -> LifelineIdx -> ( LayerIdx, Lifeline ) -> ( LayerIdx, List Lifeline )
 updateLifelines lifelines lifelineIdx ( layer, lifeline ) =
     let
         mNewLifelines =
             Lifeline.update lifelines lifelineIdx lifeline
     in
-    Maybe.map (\b -> ( layer, b )) mNewLifelines
+    -- Maybe.map (\b -> ( layer, b )) mNewLifelines
+    ( layer, mNewLifelines )
 
 
 toFloat : LayerIdx -> Float
