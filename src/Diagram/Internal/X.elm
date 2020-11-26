@@ -21,7 +21,7 @@ add (X y1) (X y2) =
 
 toString : X -> String
 toString (X x) =
-    "X" ++ Basics.toString x
+    "X" ++ String.fromInt x
 
 
 toInt : X -> Int

@@ -54,8 +54,8 @@ getParticipantId (Participant cId _) =
 
 
 update : List Lifeline -> LifelineIdx -> Lifeline -> Maybe (List Lifeline)
-update lifelines (LifelineIdx l) lifeline =
-    setAt l lifeline lifelines
+update lifelines (LifelineIdx l) lifeline_ =
+    setAt l lifeline_ lifelines
 
 
 getDirection : LifelineIdx -> LifelineIdx -> Direction
@@ -83,7 +83,7 @@ toFloat (LifelineIdx x) =
 
 toString : LifelineIdx -> String
 toString (LifelineIdx x) =
-    "L" ++ Basics.toString x
+    "L" ++ String.fromInt x
 
 
 

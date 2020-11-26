@@ -64,8 +64,8 @@ point ({ unitV, unitH, layerOffset } as config) { lifelineIdx, layerIdx, y } sid
 
 
 stringify : Rectangle -> ( String, String, String, String )
-stringify ( a, b, c, d ) =
-    ( toString a, toString b, toString c, toString d )
+stringify { x, y, width, height } =
+    ( ( toString x, toString y ), ( toString width, toString height ) )
 
 
 

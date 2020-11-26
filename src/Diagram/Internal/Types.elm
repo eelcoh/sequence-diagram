@@ -234,7 +234,11 @@ type Point
 
 
 type alias Rectangle =
-    ( Float, Float, Float, Float )
+    { x : Float
+    , y : Float
+    , width : Float
+    , height : Float
+    }
 
 
 type Side

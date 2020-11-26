@@ -14,27 +14,35 @@ import Svg.Attributes as SvgA exposing (..)
 view : Config -> Int -> Lifeline -> Svg msg
 view config ln { participant, idx } =
     let
-        ( l, t, w, h ) =
+        rect =
             getCoordinatesForComponent config idx
 
-        ( mt, tt, wt, ht ) =
-            ( l + (w / 2.0), t + (h / 2.0), w, h )
+        l =
+            rect.x
+
+        t =
+            rect.y
+
+        w =
+            rect.width
+
+        h =
+            rect.height
+
+        ( ( mt, tt ), _ ) =
+            Rectangle (l + (w / 2.0)) (t + (h / 2.0)) w h
                 |> Point.stringify
 
-        ( lc, tc, wc, hc ) =
-            ( l, t, w, h )
-                |> Point.stringify
+        ( ( lc, tc ), ( wc, hc ) ) =
+            Point.stringify rect
 
-        yCenter =
-            t + (h / 2.0)
-
-        pt ( x, y ) =
-            String.join "," [ toString x, toString y ]
-
-        pts cs =
-            List.map pt cs
-                |> String.join " "
-
+        -- yCenter =
+        --     t + (h / 2.0)
+        -- pt ( x, y ) =
+        --     String.join "," [ toString x, toString y ]
+        -- pts cs =
+        --     List.map pt cs
+        --         |> String.join " "
         caption =
             getAttributes participant
                 |> Attributes.getCaption
@@ -45,10 +53,9 @@ view config ln { participant, idx } =
             getAttributes participant
                 |> Colour.text
 
-        lineColor =
-            getAttributes participant
-                |> Colour.line
-
+        -- lineColor =
+        --     getAttributes participant
+        --         |> Colour.line
         backgroundColour =
             getAttributes participant
                 |> Colour.background
@@ -121,7 +128,7 @@ getCoordinatesForComponent config lifelineIdx =
         height =
             stepHeight * 1.6
     in
-    ( x, y, width, height )
+    Rectangle x y width height
 
 
 getCoordinatesForLifeline : Config -> LifelineIdx -> Int -> ( Point, Point )

@@ -62,10 +62,8 @@ refSync sequenceName attributes =
     RefSync (Identifier sequenceName) attributes
 
 
-namedSequence : String -> Sequence -> NamedSequence
-namedSequence sequenceName sequence =
-    ( sequenceName, sequence )
 
-
-
+-- namedSequence : String -> Sequence -> NamedSequence
+-- namedSequence sequenceName seq =
+--     ( sequenceName, seq )
 --
