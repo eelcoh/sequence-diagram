@@ -102,7 +102,7 @@ addActiveId : Model -> ( Maybe String, Model )
 addActiveId model =
     Model.currentSession model
         |> Session.getCurrentActiveId
-        |> (\b a -> (\a b -> ( a, b )) a b) model
+        |> (\b a -> (\c d -> ( c, d )) a b) model
 
 
 
