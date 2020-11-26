@@ -56,12 +56,12 @@ view config active (Arrow attrs arrowDetails) =
 
 
 viewArrowCaption : Config -> Show -> List Attribute -> ArrowDetails -> Point -> Point -> String -> Svg msg
-viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 y2) caption =
+viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 y2) caption_ =
     let
         ty =
             ((y1 + y2) / 2)
                 + yOffset
-                |> toString
+                |> String.fromFloat
 
         yOffset =
             case direction of
@@ -74,7 +74,7 @@ viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 
         tx =
             (x1 + x2)
                 / 2
-                |> toString
+                |> String.fromFloat
 
         textColor =
             Colour.txt active
@@ -89,7 +89,7 @@ viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 
     in
     Svg.text_
         attrs
-        [ Svg.text caption ]
+        [ Svg.text caption_ ]
 
 
 viewArrowHead : Config -> Show -> List Attribute -> ArrowDetails -> Point -> Svg msg
@@ -118,8 +118,8 @@ viewArrowHead config active attributes { arrowType, direction } (Point x y) =
                 ToSelf ->
                     x + szX
 
-        pt ( x, y ) =
-            String.join "," [ toString x, toString y ]
+        pt ( xx, yy ) =
+            String.join "," [ String.fromFloat xx, String.fromFloat yy ]
 
         pts =
             List.map pt [ ( x_, y1 ), ( x, y ), ( x_, y2 ) ]
