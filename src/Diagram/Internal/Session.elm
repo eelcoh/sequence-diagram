@@ -374,8 +374,8 @@ getHash (Session hash _ _ _ _ _) =
 
 
 getActive : Session -> Show
-getActive (Session _ _ show _ _ _) =
-    show
+getActive (Session _ _ showw _ _ _) =
+    showw
 
 
 setSessions : Session -> Sessions (List Session) -> Session
