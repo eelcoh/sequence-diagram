@@ -10,17 +10,17 @@ pointToString : Point -> String
 pointToString (Point x1 y1) =
     let
         x =
-            toString x1
+            String.fromFloat x1
 
         y =
-            toString y1
+            String.fromFloat y1
     in
     String.join "," [ x, y ]
 
 
 coordsToString : Point -> ( String, String )
 coordsToString (Point x y) =
-    ( toString x, toString y )
+    ( String.fromFloat x, String.fromFloat y )
 
 
 offset : Config -> Side -> Float
@@ -63,9 +63,15 @@ point ({ unitV, unitH, layerOffset } as config) { lifelineIdx, layerIdx, y } sid
     Point px py
 
 
-stringify : Rectangle -> ( String, String, String, String )
+stringify : Rectangle -> ( ( String, String ), ( String, String ) )
 stringify { x, y, width, height } =
-    ( ( toString x, toString y ), ( toString width, toString height ) )
+    ( ( String.fromFloat x
+      , String.fromFloat y
+      )
+    , ( String.fromFloat width
+      , String.fromFloat height
+      )
+    )
 
 
 
