@@ -166,41 +166,41 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
                                 RefSync _ _ ->
                                     True
                     in
-                    case Maybe.map2 (\c d -> ( withReturn, lastHasReturn, c, d )) mDirectionLast mDirectionBack of
-                        Just ( False, _, _, _ ) ->
+                    case Maybe.map2 (\c d -> ( ( withReturn, lastHasReturn ), ( c, d ) )) mDirectionLast mDirectionBack of
+                        Just ( ( False, _ ), ( _, _ ) ) ->
                             Y 0
 
-                        Just ( True, False, ToSelf, _ ) ->
+                        Just ( ( True, False ), ( ToSelf, _ ) ) ->
                             Y 1
 
-                        Just ( True, False, _, _ ) ->
+                        Just ( ( True, False ), ( _, _ ) ) ->
                             Y 0
 
-                        Just ( _, _, ToSelf, ToSelf ) ->
+                        Just ( ( _, _ ), ( ToSelf, ToSelf ) ) ->
                             Y 1
 
-                        Just ( _, _, ToSelf, LeftToRight ) ->
+                        Just ( ( _, _ ), ( ToSelf, LeftToRight ) ) ->
                             Y 1
 
-                        Just ( _, _, ToSelf, RightToLeft ) ->
+                        Just ( ( _, _ ), ( ToSelf, RightToLeft ) ) ->
                             Y 0
 
-                        Just ( _, _, LeftToRight, ToSelf ) ->
+                        Just ( ( _, _ ), ( LeftToRight, ToSelf ) ) ->
                             Y 0
 
-                        Just ( _, _, LeftToRight, LeftToRight ) ->
+                        Just ( ( _, _ ), ( LeftToRight, LeftToRight ) ) ->
                             Y 0
 
-                        Just ( _, _, LeftToRight, RightToLeft ) ->
+                        Just ( ( _, _ ), ( LeftToRight, RightToLeft ) ) ->
                             Y 1
 
-                        Just ( _, _, RightToLeft, ToSelf ) ->
+                        Just ( ( _, _ ), ( RightToLeft, ToSelf ) ) ->
                             Y 1
 
-                        Just ( _, _, RightToLeft, LeftToRight ) ->
+                        Just ( ( _, _ ), ( RightToLeft, LeftToRight ) ) ->
                             Y 0
 
-                        Just ( _, _, RightToLeft, RightToLeft ) ->
+                        Just ( ( _, _ ), ( RightToLeft, RightToLeft ) ) ->
                             Y 0
 
                         Nothing ->
@@ -237,8 +237,8 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
                     sessionsPassOne attrs sessionFirstStart mLifelineIdx lifelines namedSequences sequenceList
                         |> Result.map Sessions
 
-                Refer identifier ->
-                    Ok (Refer identifier)
+                Refer ident ->
+                    Ok (Refer ident)
 
         mLastSession =
             case rNextSessions of
@@ -296,8 +296,8 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
             , outgoing = arrowOut
             }
 
-        toPassOne mLifelineIdx rNxtSessions =
-            case ( mLifelineIdx, rNxtSessions ) of
+        toPassOne mLifelineIdx_ rNxtSessions =
+            case ( mLifelineIdx_, rNxtSessions ) of
                 ( _, Err error ) ->
                     Err error
 

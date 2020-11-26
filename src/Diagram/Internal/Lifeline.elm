@@ -53,7 +53,7 @@ getParticipantId (Participant cId _) =
     cId
 
 
-update : List Lifeline -> LifelineIdx -> Lifeline -> Maybe (List Lifeline)
+update : List Lifeline -> LifelineIdx -> Lifeline ->  (List Lifeline)
 update lifelines (LifelineIdx l) lifeline_ =
     setAt l lifeline_ lifelines
 
