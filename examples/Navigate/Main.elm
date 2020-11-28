@@ -1,16 +1,15 @@
-module Main exposing (Model, Msg(..),  containerStyle, diagramStyle, explanationStyle, init, keyCodes, keyPressDispatcher, main, subscriptions, texts, toModel, update, view, viewDiagram, viewError, viewExplanation)
+module Main exposing (Model, Msg(..), containerStyle, diagramStyle, explanationStyle, init, keyCodes, keyPressDispatcher, main, subscriptions, texts, toModel, update, view, viewDiagram, viewError, viewExplanation)
 
+import Browser
+import Browser.Events as Events
+import Browser.Navigation as Navigation
 import Diagram exposing (Diagram, Errors)
 import Diagram.Navigate exposing (first, full, next, prev, rewind, zoom, zoomOut)
 import Dict
 import Html exposing (Html)
 import Html.Attributes exposing (style)
-import Browser.Events as Events
-import Sequences
 import Json.Decode as Decode
-
-import Browser
-import Browser.Navigation as Navigation
+import Sequences
 import Url exposing (Url)
 
 
@@ -19,10 +18,12 @@ type alias Model =
     , activeId : Maybe String
     }
 
-type alias WindowSize = 
+
+type alias WindowSize =
     { w : Int
-    , h: Int
+    , h : Int
     }
+
 
 type Msg
     = Start
@@ -93,10 +94,10 @@ update msg model =
         WindowResizes x y ->
             let
                 newModel =
-                    Result.map (\d -> Diagram.resize d {width = x,height =y}) model.diagram
+                    Result.map (\d -> Diagram.resize d { width = x, height = y }) model.diagram
                         |> (\b a -> Model a b) Nothing
             in
-            ( newModel, Cmd.none ) 
+            ( newModel, Cmd.none )
 
         NoOp ->
             ( model, Cmd.none )
@@ -199,7 +200,7 @@ keys =
         , ( "s", Next )
 
         -- d
-        , ("d", End )
+        , ( "d", End )
 
         -- f
         , ( "f", Previous )
@@ -225,6 +226,7 @@ keys =
         -- o
         ]
 
+
 keyPressDispatcher : Int -> Msg
 keyPressDispatcher keyCode =
     Dict.get keyCode keyCodes
@@ -234,15 +236,20 @@ keyPressDispatcher keyCode =
 keyPressDispatcher2 : String -> Msg
 keyPressDispatcher2 keyCode =
     Dict.get keyCode keys
-        |> Maybe.withDefault NoOp 
+        |> Maybe.withDefault NoOp
+
 
 type Key
-  = Character Char
-  | Control String
+    = Character Char
+    | Control String
 
-keyDecoder : Decode.Decoder Msg 
+
+keyDecoder : Decode.Decoder Msg
 keyDecoder =
     Decode.map keyPressDispatcher2 (Decode.field "key" Decode.string)
+
+
+
 -- toKey : String -> Msg
 -- toKey string =
 --   case String.uncons string of
@@ -258,44 +265,42 @@ view model =
     let
         contents =
             Html.div []
-                [ Html.div  containerStyle 
+                [ Html.div containerStyle
                     [ Html.div explanationStyle [ viewExplanation model ]
                     , Html.div diagramStyle [ viewDiagram model ]
                     ]
                 ]
     in
-        { title = "Sequence"
-        , body = [contents]
-        }
-
-    
+    { title = "Sequence"
+    , body = [ contents ]
+    }
 
 
 containerStyle : List (Html.Attribute msg)
 containerStyle =
-    
-        [ style "display" "flex" 
-        , style "flex-flow" "row wrap" 
-        , style "justify-content" "space-around" 
-        , style "width" "100%" 
-        , style "background-color" "#dedede" 
-        ]
+    [ style "display" "flex"
+    , style "flex-flow" "row wrap"
+    , style "justify-content" "space-around"
+    , style "width" "100%"
+    , style "background-color" "#dedede"
+    ]
 
 
 explanationStyle : List (Html.Attribute msg)
 explanationStyle =
-        [ style "order" "1" 
-        , style "width" "40%" 
-        ]
+    [ style "order" "1"
+    , style "width" "40%"
+    ]
 
 
 diagramStyle : List (Html.Attribute msg)
 diagramStyle =
-        [style "order" "2"
-        ,style "width" "50%"
-        ,style "margin-top" "40px"
-        ,style "margin-bottom" "30px"
+    [ style "order" "2"
+    , style "width" "50%"
+    , style "margin-top" "40px"
+    , style "margin-bottom" "30px"
     ]
+
 
 viewExplanation : Model -> Html Msg
 viewExplanation { activeId } =
@@ -420,36 +425,43 @@ texts =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Events.onKeyUp  keyDecoder
+        [ Events.onKeyUp keyDecoder
         , Events.onResize WindowResizes
+
         -- ,Events.onKeyUp keyPressDispatcher
         ]
 
+
+
 -- init : flags -> Url -> Key -> ( model, Cmd msg )
-init : () ->  Url -> Navigation.Key -> ( Model, Cmd Msg )
-init  _ _ _=
+
+
+init : () -> Url -> Navigation.Key -> ( Model, Cmd Msg )
+init _ _ _ =
     let
         model =
-            Model (Sequences.create) Nothing 
+            Model Sequences.create Nothing
     in
     ( model, Cmd.none )
 
-main :  Program () Model Msg
+
+main : Program () Model Msg
 main =
-    Browser.application 
-        { init = init  
+    Browser.application
+        { init = init
         , update = update
         , view = view
         , subscriptions = subscriptions
-        , onUrlRequest = onUrlRequest 
-        , onUrlChange = onUrlChange 
+        , onUrlRequest = onUrlRequest
+        , onUrlChange = onUrlChange
         }
 
+
 onUrlRequest : Browser.UrlRequest -> Msg
-onUrlRequest url = 
+onUrlRequest url =
     NewLocation url
 
-onUrlChange : Url -> Msg
-onUrlChange url = 
-    NoOp
 
+onUrlChange : Url -> Msg
+onUrlChange url =
+    NoOp
