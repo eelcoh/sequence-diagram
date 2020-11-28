@@ -1,4 +1,4 @@
-module Main exposing (Model, Msg(..), app, containerStyle, diagramStyle, explanationStyle, init, keyCodes, keyPressDispatcher, main, subscriptions, texts, toModel, update, view, viewDiagram, viewError, viewExplanation)
+module Main exposing (Model, Msg(..),  containerStyle, diagramStyle, explanationStyle, init, keyCodes, keyPressDispatcher, main, subscriptions, texts, toModel, update, view, viewDiagram, viewError, viewExplanation)
 
 import Diagram exposing (Diagram, Errors)
 import Diagram.Navigate exposing (first, full, next, prev, rewind, zoom, zoomOut)
@@ -7,8 +7,12 @@ import Html exposing (Html)
 import Html.Attributes exposing (style)
 import Browser.Events as Events
 import Sequences
+import Json.Decode as Decode
 
 import Browser
+import Browser.Navigation as Navigation
+import Url exposing (Url)
+
 
 type alias Model =
     { diagram : Result Errors Diagram
@@ -27,8 +31,8 @@ type Msg
     | End
     | Zoom
     | ZoomOut
-    | NewLocation Navigation.Location
-    | WindowResizes WindowSize
+    | NewLocation Browser.UrlRequest
+    | WindowResizes Int Int
     | NoOp
 
 
@@ -86,13 +90,13 @@ update msg model =
         NewLocation l ->
             ( model, Cmd.none )
 
-        WindowResizes windowSize ->
+        WindowResizes x y ->
             let
                 newModel =
-                    Result.map (\d -> Diagram.resize d windowSize) model.diagram
+                    Result.map (\d -> Diagram.resize d {width = x,height =y}) model.diagram
                         |> (\b a -> Model a b) Nothing
             in
-            ( newModel, Cmd.none )
+            ( newModel, Cmd.none ) 
 
         NoOp ->
             ( model, Cmd.none )
@@ -165,67 +169,133 @@ keyCodes =
         ]
 
 
+keys : Dict.Dict String Msg
+keys =
+    Dict.fromList
+        [ ( "Start", Start )
+
+        -- home
+        , ( "Home", End )
+
+        -- end
+        , ( "End", Next )
+
+        -- return
+        , ( "Return", Next )
+
+        -- space
+        , ( "Space", Next )
+
+        -- arrow right
+        , ( "ArrowRight", End )
+
+        -- l
+        , ( "l", Start )
+
+        -- r for rewind
+        , ( "r", Start )
+
+        -- s for start
+        , ( "s", Next )
+
+        -- d
+        , ("d", End )
+
+        -- f
+        , ( "f", Previous )
+
+        -- arrow left
+        , ( "ArrowLeft", Next )
+
+        -- n
+        , ( "n", Previous )
+
+        -- p
+        , ( "p", Previous )
+
+        -- h
+        , ( "h", Zoom )
+
+        -- z
+        , ( "z", ZoomOut )
+
+        -- Escape
+        , ( "Escape", ZoomOut )
+
+        -- o
+        ]
+
 keyPressDispatcher : Int -> Msg
 keyPressDispatcher keyCode =
     Dict.get keyCode keyCodes
         |> Maybe.withDefault NoOp
 
 
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Events.onKeyUp keyPressDispatcher
-        , Events.onResize WindowResizes
-        ]
+keyPressDispatcher2 : String -> Msg
+keyPressDispatcher2 keyCode =
+    Dict.get keyCode keys
+        |> Maybe.withDefault NoOp 
+
+type Key
+  = Character Char
+  | Control String
+
+keyDecoder : Decode.Decoder Msg 
+keyDecoder =
+    Decode.map keyPressDispatcher2 (Decode.field "key" Decode.string)
+-- toKey : String -> Msg
+-- toKey string =
+--   case String.uncons string of
+--     Just (char, "") ->
+--       Dict.get char keyCodes
+--         |> Maybe.withDefault NoOp
+--     _ ->
+--       NoOp
 
 
-init : Result Errors Diagram -> Navigation.Location -> ( Model, Cmd Msg )
-init diagram location =
-    let
-        model =
-            Model diagram Nothing
-    in
-    ( model, Cmd.none )
-
-
-view : Model -> Html Msg
+view : Model -> Browser.Document Msg
 view model =
-    Html.div []
-        [ Html.div [ containerStyle ]
-            [ Html.div [ explanationStyle ] [ viewExplanation model ]
-            , Html.div [ diagramStyle ] [ viewDiagram model ]
-            ]
-        ]
+    let
+        contents =
+            Html.div []
+                [ Html.div  containerStyle 
+                    [ Html.div explanationStyle [ viewExplanation model ]
+                    , Html.div diagramStyle [ viewDiagram model ]
+                    ]
+                ]
+    in
+        { title = "Sequence"
+        , body = [contents]
+        }
+
+    
 
 
-containerStyle : Html.Attribute msg
+containerStyle : List (Html.Attribute msg)
 containerStyle =
-    style
-        [ ( "display", "flex" )
-        , ( "flex-flow", "row wrap" )
-        , ( "justify-content", "space-around" )
-        , ( "width", "100%" )
-        , ( "background-color", "#dedede" )
+    
+        [ style "display" "flex" 
+        , style "flex-flow" "row wrap" 
+        , style "justify-content" "space-around" 
+        , style "width" "100%" 
+        , style "background-color" "#dedede" 
         ]
 
 
-explanationStyle : Html.Attribute msg
+explanationStyle : List (Html.Attribute msg)
 explanationStyle =
-    style
-        [ ( "order", "1" )
-        , ( "width", "40%" )
+        [ style "order" "1" 
+        , style "width" "40%" 
         ]
 
 
-diagramStyle : Html.Attribute msg
+diagramStyle : List (Html.Attribute msg)
 diagramStyle =
-    style
-        [ ( "order", "2" )
-        , ( "width", "50%" )
-        , ( "margin-top", "40px" )
-        , ( "margin-bottom", "30px" )
-        ]
-
+        [style "order" "2"
+        ,style "width" "50%"
+        ,style "margin-top" "40px"
+        ,style "margin-bottom" "30px"
+    ]
 
 viewExplanation : Model -> Html Msg
 viewExplanation { activeId } =
@@ -347,16 +417,39 @@ texts =
         |> Dict.fromList
 
 
-app : Result Errors Diagram -> Program Never Model Msg
-app rDiagram =
-    Navigation.program
-        NewLocation
-        { init = init rDiagram
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Events.onKeyUp  keyDecoder
+        , Events.onResize WindowResizes
+        -- ,Events.onKeyUp keyPressDispatcher
+        ]
+
+-- init : flags -> Url -> Key -> ( model, Cmd msg )
+init : () ->  Url -> Navigation.Key -> ( Model, Cmd Msg )
+init  _ _ _=
+    let
+        model =
+            Model (Sequences.create) Nothing 
+    in
+    ( model, Cmd.none )
+
+main :  Program () Model Msg
+main =
+    Browser.application 
+        { init = init  
         , update = update
         , view = view
         , subscriptions = subscriptions
+        , onUrlRequest = onUrlRequest 
+        , onUrlChange = onUrlChange 
         }
 
+onUrlRequest : Browser.UrlRequest -> Msg
+onUrlRequest url = 
+    NewLocation url
 
-main =
-    app Sequences.create
+onUrlChange : Url -> Msg
+onUrlChange url = 
+    NoOp
+

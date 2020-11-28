@@ -20,7 +20,7 @@ module Diagram exposing
 # Data
 
 @docs Diagram, Errors
- 
+
 -}
 
 import Diagram.Internal.DiagramData as DiagramData
@@ -35,7 +35,7 @@ import List exposing (all)
 import Result.Extra as ResultX
 import Svg
 import Svg.Attributes as SvgA
- 
+
 
 {-| The model of the diagram
 -}
@@ -136,11 +136,11 @@ dims { config } =
     let
         w =
             config.size.width
-                |> toString
+                |> String.fromInt
 
         h =
             config.size.height
-                |> toString
+                |> String.fromInt
     in
     String.join " " [ "0", "0", w, h ]
 
