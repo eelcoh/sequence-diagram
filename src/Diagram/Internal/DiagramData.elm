@@ -5,8 +5,7 @@ module Diagram.Internal.DiagramData exposing (create)
 
 import Diagram.Internal.Compile exposing (compile)
 import Diagram.Internal.Participant as Participant
-import Diagram.Internal.Types as Types exposing (DiagramData, Errors, Model, NamedSequences, Participant, Sequence, Size)
-import List exposing (all)
+import Diagram.Internal.Types exposing (DiagramData, Errors, NamedSequences, Participant, Sequence)
 
 
 create : List Participant -> NamedSequences -> Sequence -> Result Errors DiagramData

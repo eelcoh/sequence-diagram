@@ -11,7 +11,7 @@ module Diagram.Highlight exposing (highlight, reset)
 
 import Diagram.Internal.Model as Model
 import Diagram.Internal.Session as Session
-import Diagram.Internal.Types as Types exposing (Model)
+import Diagram.Internal.Types exposing (Model)
 
 
 {-| Highlight all sessions with (one of the) given tags.

@@ -5,7 +5,7 @@ import Diagram.Internal.Render.Colour as Colour
 import Diagram.Internal.Render.Config exposing (calculateBase)
 import Diagram.Internal.Render.Line
 import Diagram.Internal.Render.Point as Point
-import Diagram.Internal.Types as Diagram exposing (..)
+import Diagram.Internal.Types as Diagram exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Config, Direction(..), Identifier(..), Lifeline, LifelineIdx, Line, LineType(..), Overlap(..), Participant(..), Point(..), Range(..), Rectangle, Sequence(..), Sessions(..), Show(..), Side(..))
 import Maybe exposing (withDefault)
 import Svg exposing (..)
 import Svg.Attributes as SvgA exposing (..)

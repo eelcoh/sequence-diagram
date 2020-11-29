@@ -19,7 +19,7 @@ module Diagram.Participant exposing
 
 import Diagram.Attribute as Attribute
 import Diagram.Internal.Participant as Participant
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Direction(..), Identifier(..), LineType(..), Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Side(..))
 
 
 {-| Participants

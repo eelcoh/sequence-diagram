@@ -2,7 +2,7 @@ module Diagram.Internal.Compile.Session exposing (toSession)
 
 import Diagram.Internal.Compile.Types exposing (SessionPassTwo(..))
 import Diagram.Internal.Lifeline as Lifeline
-import Diagram.Internal.Types exposing (Config, Hash, Horizontal, Identifier(..), Overlap(..), Range(..), Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
+import Diagram.Internal.Types exposing (Horizontal, Identifier(..), Overlap(..), Range(..), Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
 import Diagram.Internal.X as X
 import Diagram.Internal.Y as Y
 import Murmur3

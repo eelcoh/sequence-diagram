@@ -1,7 +1,7 @@
 module Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowDetails, ArrowType(..), Attribute(..), Config, Coordinate, DiagramData, Direction(..), End, Errors, Hash, Head(..), Horizontal, Identifier(..), Layer(..), LayerIdx, Lifeline, LifelineDetails, LifelineIdx(..), Line, LineCoordinates, LineType(..), Model, NamedSequence, NamedSequences, Overlap(..), Participant(..), Point(..), Range(..), Rectangle, Sequence(..), Session(..), SessionDetails, SessionTable, Sessions(..), Show(..), Side(..), Size, Start, Vertical, X(..), Y(..))
 
 import Color exposing (Color)
-import Dict exposing (Dict)
+import Dict
 
 
 type alias Model =

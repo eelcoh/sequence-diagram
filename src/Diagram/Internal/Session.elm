@@ -14,7 +14,7 @@ import Diagram.Internal.Arrow as Arrow
 import Diagram.Internal.Attribute as Attributes
 import Diagram.Internal.Sessions as Sessions
 import Diagram.Internal.Tag as Tag
-import Diagram.Internal.Types exposing (Config, Hash, Horizontal, Identifier(..), Overlap(..), Range(..), Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
+import Diagram.Internal.Types exposing (Identifier(..), Overlap(..), Range(..), Session(..), Sessions(..), Show(..), Y(..))
 import Maybe.Extra as MaybeX
 
 
@@ -33,7 +33,7 @@ full session =
 next : Session -> Session
 next session =
     let
-        finish ( c, s ) =
+        finish ( _, s ) =
             let
                 newSession =
                     case inspectSession session of
@@ -212,7 +212,7 @@ previous session =
 
                 ( changed, newSessions ) =
                     case sessions of
-                        Refer i ->
+                        Refer _ ->
                             ( Unchanged, sessions )
 
                         Sessions sessionList ->
@@ -270,7 +270,7 @@ activateLast session =
             Sessions.get session
     in
     case ml of
-        Refer i ->
+        Refer _ ->
             activateThis session
 
         Sessions sessions ->
@@ -313,45 +313,8 @@ hideThis (Session hash attributes _ sessionDetails ( mArrowIn, mArrowOut ) sessi
     Session hash attributes Hidden sessionDetails ( mArrowIn, mArrowOut ) sessions
 
 
-activate : Int -> Session -> ( Bool, Session )
-activate hashToShow (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) sessions) =
-    if hash == hashToShow then
-        let
-            newSession =
-                Session hash attributes Active sessionDetails ( mArrowIn, mArrowOut ) sessions
-        in
-        ( True, newSession )
-
-    else
-        let
-            any =
-                List.any identity
-
-            ( found, newSessions ) =
-                case sessions of
-                    Sessions sess ->
-                        List.map (activate hashToShow) sess
-                            |> List.unzip
-                            |> (\( a, b ) -> ( any a, Sessions b ))
-
-                    Refer i ->
-                        ( False, Refer i )
-
-            newStatus =
-                if found then
-                    Visible
-
-                else
-                    Hidden
-
-            newSession =
-                Session hash attributes newStatus sessionDetails ( mArrowIn, mArrowOut ) newSessions
-        in
-        ( found, newSession )
-
-
 hide : Session -> Session
-hide (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) sessions) =
+hide (Session hash attributes _ sessionDetails ( mArrowIn, mArrowOut ) sessions) =
     let
         newSessions =
             Sessions.map hide sessions
@@ -360,17 +323,12 @@ hide (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) sess
 
 
 show : Session -> Session
-show (Session hash attributes active sessionDetails ( mArrowIn, mArrowOut ) sessions) =
+show (Session hash attributes _ sessionDetails ( mArrowIn, mArrowOut ) sessions) =
     let
         newSessions =
             Sessions.map full sessions
     in
     Session hash attributes Visible sessionDetails ( mArrowIn, mArrowOut ) newSessions
-
-
-getHash : Session -> Hash
-getHash (Session hash _ _ _ _ _) =
-    hash
 
 
 getActive : Session -> Show
@@ -402,17 +360,6 @@ max (Session _ _ _ { end } ( _, arrowOut ) sessions) =
             1
 
 
-mirror : Session -> Session
-mirror session =
-    let
-        sessions =
-            Sessions.get session
-                |> Sessions.reverse
-                |> Sessions.map mirror
-    in
-    setSessions session sessions
-
-
 type Inspect
     = AllVisible
     | AllHidden
@@ -441,14 +388,6 @@ inspectSession session =
                 _ ->
                     False
 
-        isActive s =
-            case s of
-                Active ->
-                    True
-
-                _ ->
-                    False
-
         allVisible =
             List.all isVisible allstatuses
 
@@ -468,7 +407,7 @@ inspectSession session =
 getAllActives : Sessions (List Session) -> List Show
 getAllActives sessions =
     case sessions of
-        Refer i ->
+        Refer _ ->
             []
 
         Sessions sessionList ->
@@ -499,7 +438,7 @@ getZoom session =
 
 
 highlight : List String -> Session -> Session
-highlight tags (Session hash attributes active sessionDetails arrows sessions) =
+highlight tags (Session hash attributes _ sessionDetails arrows sessions) =
     let
         newSessions =
             case sessions of
@@ -507,7 +446,7 @@ highlight tags (Session hash attributes active sessionDetails arrows sessions) =
                     List.map (highlight tags) ss
                         |> Sessions
 
-                Refer a ->
+                Refer _ ->
                     sessions
 
         newActive =
@@ -521,7 +460,7 @@ highlight tags (Session hash attributes active sessionDetails arrows sessions) =
 
 
 getCurrentActiveId : Session -> Maybe String
-getCurrentActiveId (Session hash attributes active sessionDetails arrows sessions) =
+getCurrentActiveId (Session _ attributes active _ _ sessions) =
     case active of
         Active ->
             Attributes.getId attributes
@@ -532,7 +471,7 @@ getCurrentActiveId (Session hash attributes active sessionDetails arrows session
                     List.filterMap getCurrentActiveId ss
                         |> List.head
 
-                Refer s ->
+                Refer _ ->
                     Nothing
 
 

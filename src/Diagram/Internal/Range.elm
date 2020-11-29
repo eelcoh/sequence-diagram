@@ -1,6 +1,6 @@
 module Diagram.Internal.Range exposing (getEnd, getStart, overlap)
 
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (Identifier(..), Overlap(..), Participant(..), Range(..), Sequence(..), Y)
 import Diagram.Internal.Y as Y
 
 

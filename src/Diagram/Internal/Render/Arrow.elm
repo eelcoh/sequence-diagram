@@ -4,7 +4,7 @@ import Diagram.Internal.Attribute as Attributes
 import Diagram.Internal.Render.Colour as Colour
 import Diagram.Internal.Render.Line as Line
 import Diagram.Internal.Render.Point as Point
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (Arrow(..), ArrowDetails, ArrowType(..), Attribute, Config, Direction(..), Identifier(..), Line, LineCoordinates, LineType(..), Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Show, Side(..))
 import Svg exposing (Svg)
 import Svg.Attributes as SvgA
 
@@ -47,16 +47,13 @@ view config active (Arrow attrs arrowDetails) =
 
                 _ ->
                     "middle"
-
-        attributes =
-            [ SvgA.textAnchor anchor ]
     in
     Svg.g [ SvgA.textAnchor anchor ]
         figures
 
 
 viewArrowCaption : Config -> Show -> List Attribute -> ArrowDetails -> Point -> Point -> String -> Svg msg
-viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 y2) caption_ =
+viewArrowCaption _ active _ { direction } (Point x1 y1) (Point x2 y2) caption_ =
     let
         ty =
             ((y1 + y2) / 2)
@@ -93,7 +90,7 @@ viewArrowCaption config active attributes { direction } (Point x1 y1) (Point x2 
 
 
 viewArrowHead : Config -> Show -> List Attribute -> ArrowDetails -> Point -> Svg msg
-viewArrowHead config active attributes { arrowType, direction } (Point x y) =
+viewArrowHead config active _ { arrowType, direction } (Point x y) =
     let
         szX =
             config.unitH / 2.0
@@ -133,9 +130,6 @@ viewArrowHead config active attributes { arrowType, direction } (Point x y) =
                 _ ->
                     ( Svg.polyline, Colour.none )
 
-        bgColor =
-            Colour.fill active
-
         lineColor =
             Colour.stroke active
 
@@ -156,7 +150,7 @@ viewArrowHead config active attributes { arrowType, direction } (Point x y) =
 
 
 calcLine : Config -> ArrowDetails -> LineCoordinates
-calcLine ({ width, unitV, unitH, layerOffset } as config) { start, end, arrowType, direction } =
+calcLine config { start, end, arrowType, direction } =
     case direction of
         LeftToRight ->
             { start = Point.point config start RightSide

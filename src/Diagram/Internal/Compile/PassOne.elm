@@ -2,9 +2,9 @@ module Diagram.Internal.Compile.PassOne exposing (pass)
 
 import Diagram.Internal.Compile.NamedSequences as Named
 import Diagram.Internal.Compile.Sequence as Sequence
-import Diagram.Internal.Compile.Types exposing (..)
+import Diagram.Internal.Compile.Types exposing (ArrowMeta, SessionPassOne(..))
 import Diagram.Internal.Lifeline as Lifeline exposing (getDirection)
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Direction(..), Errors, Identifier(..), Lifeline, LifelineIdx, LineType(..), NamedSequences, Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Sessions(..), Side(..), Start, Y(..))
 import Diagram.Internal.Y as Y
 import List.Extra as Extra
 
@@ -113,7 +113,7 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
                 Nothing ->
                     Y 0
 
-                Just sequence ->
+                Just _ ->
                     case Maybe.map2 (\a b -> ( a, b )) mDirectionIn mDirectionFirst of
                         Just ( ToSelf, ToSelf ) ->
                             Y 1
@@ -247,9 +247,6 @@ addSession lifelines namedSequences mLifelineIdxFrom identifier attrs sequences 
 
                 _ ->
                     Nothing
-
-        mLastArrowOut =
-            Maybe.map (\(SessionPassOne _ _ vertical _ _) -> vertical.arrowOutEnd) mLastSession
 
         mLastEnd =
             Maybe.map (\(SessionPassOne _ _ vertical _ _) -> vertical.end) mLastSession

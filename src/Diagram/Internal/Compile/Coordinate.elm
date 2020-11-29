@@ -1,6 +1,6 @@
 module Diagram.Internal.Compile.Coordinate exposing (toCoordinate, y)
 
-import Diagram.Internal.Types exposing (Config, Coordinate, LayerIdx, LifelineIdx, Point(..), Side(..), Y)
+import Diagram.Internal.Types exposing (Coordinate, LayerIdx, LifelineIdx, Point(..), Side(..), Y)
 import Diagram.Internal.Y as Y
 
 

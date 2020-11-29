@@ -1,8 +1,8 @@
 module Diagram.Internal.Compile.Arrow exposing (create)
 
-import Diagram.Internal.Compile.Coordinate exposing (..)
+import Diagram.Internal.Compile.Coordinate exposing (toCoordinate)
 import Diagram.Internal.Compile.Types exposing (ArrowTempData)
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Direction(..), Horizontal, Identifier(..), LineType(..), Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Side(..), Y)
 
 
 
@@ -25,7 +25,7 @@ create :
     -> Y
     -> ArrowTempData
     -> Arrow
-create attrs xStart yStart xEnd yEnd arrowTempData =
+create _ xStart yStart xEnd yEnd arrowTempData =
     let
         cStart =
             toCoordinate xStart.lifelineIdx xStart.layerIdx yStart

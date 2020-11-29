@@ -5,7 +5,7 @@ import Diagram.Internal.Render.Arrow as Arrow
 import Diagram.Internal.Render.Colour as Colour
 import Diagram.Internal.Render.Config as Config
 import Diagram.Internal.Sessions as Sessions
-import Diagram.Internal.Types exposing (Config, Hash, Horizontal, Overlap(..), Range(..), Session(..), SessionDetails, Sessions(..), Show(..), Vertical, Y(..))
+import Diagram.Internal.Types exposing (Config, Overlap(..), Range(..), Session(..), Sessions(..), Show(..), Y(..))
 import Svg exposing (Svg)
 import Svg.Attributes as SvgA
 
@@ -22,7 +22,7 @@ view config session =
 
         vSessions =
             case Sessions.get session of
-                Refer i ->
+                Refer _ ->
                     []
 
                 Sessions sessions ->
@@ -33,7 +33,7 @@ view config session =
 
 
 viewSession : Config -> Session -> List (Svg msg)
-viewSession config (Session hash attributes active model ( mArrowIn, mArrowOut ) _) =
+viewSession config (Session _ attributes active model ( mArrowIn, mArrowOut ) _) =
     let
         vArrowIn =
             Maybe.map (Arrow.view config active) mArrowIn
@@ -64,7 +64,7 @@ viewSession config (Session hash attributes active model ( mArrowIn, mArrowOut )
             config.unitH
                 |> String.fromFloat
 
-        ( fill, line ) =
+        ( fill, _ ) =
             case active of
                 Active ->
                     ( "#FF6200", "#333" )

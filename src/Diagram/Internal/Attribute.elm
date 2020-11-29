@@ -2,9 +2,9 @@ module Diagram.Internal.Attribute exposing (add, addOne, getBackgroundColour, ge
 
 import Color exposing (Color)
 import Color.Convert exposing (colorToHex)
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Direction(..), Identifier(..), LineType(..), Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Side(..))
 import Svg
-import Svg.Attributes exposing (color, cx, fill, stroke)
+import Svg.Attributes exposing (color, fill, stroke)
 
 
 getCaption : List Attribute -> Maybe String

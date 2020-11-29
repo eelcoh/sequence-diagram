@@ -29,9 +29,9 @@ import Diagram.Internal.Render.Config as Config
 import Diagram.Internal.Render.Lifeline as Lifeline
 import Diagram.Internal.Render.Session as RSession
 import Diagram.Internal.Session as Session
-import Diagram.Internal.Types as Types exposing (DiagramData, Identifier(..), Model, NamedSequences, Participant, Sequence, Session, Size)
+import Diagram.Internal.Types as Types exposing (DiagramData, Identifier(..), Model, Participant, Sequence, Size)
 import Dict
-import List exposing (all)
+import List
 import Result.Extra as ResultX
 import Svg
 import Svg.Attributes as SvgA

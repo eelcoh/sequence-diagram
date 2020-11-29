@@ -9,7 +9,7 @@ module Diagram.Internal.Compile.Types exposing
     , SessionPassTwo(..)
     )
 
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Direction(..), Horizontal, Identifier(..), LifelineIdx, LineType(..), Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Sessions(..), Side(..), Vertical)
 
 
 type SessionPassOne

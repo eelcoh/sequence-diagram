@@ -1,6 +1,6 @@
 module Diagram.Internal.Compile.NamedSequences exposing (error, get)
 
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Direction(..), Errors, Identifier(..), LineType(..), NamedSequences, Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Side(..))
 import Dict
 
 

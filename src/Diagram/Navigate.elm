@@ -11,7 +11,7 @@ module Diagram.Navigate exposing (first, next, prev, rewind, full, zoom, zoomOut
 
 import Diagram.Internal.Model as Model
 import Diagram.Internal.Session as Session
-import Diagram.Internal.Types as Types exposing (Identifier(..), Model)
+import Diagram.Internal.Types exposing (Identifier(..), Model)
 import Dict
 
 

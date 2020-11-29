@@ -4,7 +4,7 @@ import Diagram.Internal.Compile.PassOne as PassOne
 import Diagram.Internal.Compile.PassTwo as PassTwo
 import Diagram.Internal.Compile.Session
 import Diagram.Internal.Lifeline exposing (lifeline)
-import Diagram.Internal.Types as Compile exposing (Errors, Lifeline, NamedSequences, Participant, Sequence, Session, Y(..))
+import Diagram.Internal.Types exposing (Errors, Lifeline, NamedSequences, Participant, Sequence, Session, Y(..))
 
 
 compile : List ( Int, Participant ) -> Sequence -> NamedSequences -> Result Errors ( List Lifeline, Session )

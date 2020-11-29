@@ -9,11 +9,6 @@ import Diagram.Internal.Types exposing (Layer(..), LayerIdx, Lifeline, LifelineI
 import Diagram.Internal.X as X
 
 
-empty : List Layer
-empty =
-    []
-
-
 registerSession : Range -> LifelineIdx -> List Lifeline -> Maybe ( LayerIdx, List Lifeline )
 registerSession session lifeline lifelines =
     Lifeline.lookUp lifelines lifeline

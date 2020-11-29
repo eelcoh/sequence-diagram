@@ -2,7 +2,7 @@ module Diagram.Internal.Render.Point exposing (coordsToString, offset, point, po
 
 import Diagram.Internal.Layer as Layer
 import Diagram.Internal.Render.Config exposing (calculateBase)
-import Diagram.Internal.Types exposing (Config, Coordinate, LayerIdx, LifelineIdx, Point(..), Rectangle, Side(..), Y)
+import Diagram.Internal.Types exposing (Config, Coordinate, Point(..), Rectangle, Side(..))
 import Diagram.Internal.Y as Y
 
 
@@ -43,7 +43,7 @@ offset { unitH, layerOffset } side =
 
 
 point : Config -> Coordinate -> Side -> Point
-point ({ unitV, unitH, layerOffset } as config) { lifelineIdx, layerIdx, y } side =
+point ({ unitV, layerOffset } as config) { lifelineIdx, layerIdx, y } side =
     let
         xLifeline =
             calculateBase config lifelineIdx

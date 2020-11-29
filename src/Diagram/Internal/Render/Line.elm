@@ -1,8 +1,8 @@
 module Diagram.Internal.Render.Line exposing (draw)
 
 import Diagram.Internal.Render.Colour as Colour
-import Diagram.Internal.Render.Point exposing (..)
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Render.Point exposing (coordsToString, pointToString)
+import Diagram.Internal.Types exposing (Attribute, Config, Line, LineCoordinates, LineType(..), Point, Show)
 import Svg
 import Svg.Attributes as SvgA
 
@@ -60,7 +60,7 @@ getLineFn { between } =
 
 
 lineAttributes : Config -> List Attribute -> LineCoordinates -> Show -> List (Svg.Attribute msg)
-lineAttributes config attrs ({ start, between, end } as coordinates) active =
+lineAttributes _ attrs ({ start, between, end } as coordinates) active =
     case between of
         Nothing ->
             lineAttrs start end
@@ -75,7 +75,7 @@ lineAttributes config attrs ({ start, between, end } as coordinates) active =
 
 
 lineStyle : List Attribute -> Show -> List (Svg.Attribute msg)
-lineStyle attrs active =
+lineStyle _ active =
     [ SvgA.strokeWidth "0.5"
     , SvgA.fill "none"
     , Colour.stroke active

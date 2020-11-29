@@ -1,6 +1,6 @@
 module Diagram.Internal.Model exposing (create, currentSession, move)
 
-import Diagram.Internal.Types exposing (Config, DiagramData, Lifeline, Model, Session, SessionTable)
+import Diagram.Internal.Types exposing (Config, DiagramData, Model, Session, SessionTable)
 
 
 

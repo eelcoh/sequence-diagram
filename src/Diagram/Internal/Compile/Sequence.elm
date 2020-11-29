@@ -5,7 +5,7 @@ module Diagram.Internal.Compile.Sequence exposing
 
 import Diagram.Internal.Compile.NamedSequences as Named
 import Diagram.Internal.Lifeline as Lifeline
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Direction(..), Errors, Identifier(..), Lifeline, LifelineIdx, LineType(..), NamedSequences, Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Side(..))
 
 
 getLifelineIdx : List Lifeline -> NamedSequences -> Sequence -> Result Errors LifelineIdx

@@ -42,7 +42,7 @@ module Diagram.Attribute exposing
 -}
 
 import Color exposing (Color)
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Direction(..), Identifier(..), LineType(..), Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Side(..))
 
 
 {-| -}
@@ -88,9 +88,11 @@ isActorAttribute attribute =
 
 
 {-| The caption provides a text. It is used
-- for incoming arrows for sequence steps
-- for participants, if the participant should use a different caption than
-identifier (long identifiers can be cumbersome)
+
+  - for incoming arrows for sequence steps
+  - for participants, if the participant should use a different caption than
+    identifier (long identifiers can be cumbersome)
+
 -}
 caption : String -> Attribute
 caption c =

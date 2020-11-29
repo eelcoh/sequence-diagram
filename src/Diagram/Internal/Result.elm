@@ -23,7 +23,7 @@ oks results =
         (Ok a) :: res ->
             a :: oks res
 
-        (Err e) :: res ->
+        (Err _) :: res ->
             oks res
 
 
@@ -33,7 +33,7 @@ errors results =
         [] ->
             []
 
-        (Ok a) :: res ->
+        (Ok _) :: res ->
             errors res
 
         (Err e) :: res ->

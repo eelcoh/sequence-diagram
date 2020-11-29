@@ -3,7 +3,7 @@ module Diagram.Internal.Participant exposing (defaultParticipant, defaultPartici
 import Color
 import Diagram.Attribute as Attributes
 import Diagram.Internal.Result
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (Attribute, Errors, Identifier(..), NamedSequences, Participant(..), Sequence(..))
 import Dict
 
 

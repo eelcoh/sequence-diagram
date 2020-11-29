@@ -17,7 +17,7 @@ module Diagram.Sequence exposing
 
 -}
 
-import Diagram.Internal.Types exposing (..)
+import Diagram.Internal.Types exposing (ActorType(..), Arrow(..), ArrowType(..), Attribute(..), Direction(..), Identifier(..), LineType(..), Overlap(..), Participant(..), Point(..), Range(..), Sequence(..), Side(..))
 
 
 {-| Sequences can be seen as trees of function calls

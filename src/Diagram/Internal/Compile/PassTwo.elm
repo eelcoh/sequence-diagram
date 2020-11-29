@@ -1,9 +1,9 @@
 module Diagram.Internal.Compile.PassTwo exposing (pass)
 
 import Diagram.Internal.Compile.Arrow as Arrow
-import Diagram.Internal.Compile.Types exposing (..)
+import Diagram.Internal.Compile.Types exposing (ArrowTempData, SessionPassOne(..), SessionPassTwo(..))
 import Diagram.Internal.Layer exposing (registerSession)
-import Diagram.Internal.Types exposing (Arrow, ArrowType(..), Attribute, Coordinate, Direction(..), Horizontal, LayerIdx, Lifeline, LifelineIdx, Range(..), Sessions(..), Vertical, X(..), Y)
+import Diagram.Internal.Types exposing (Arrow, ArrowType(..), Attribute, Direction(..), Horizontal, Lifeline, Range(..), Sessions(..), Vertical, X(..))
 
 
 pass : Maybe Horizontal -> Maybe Vertical -> List Lifeline -> SessionPassOne -> ( SessionPassTwo, List Lifeline )
@@ -99,7 +99,7 @@ sessionsPassTwoList attributes mFromHorizontal mFromVertical lifelines steps =
 createIncomingArrow : List Attribute -> Maybe Horizontal -> Maybe Vertical -> Horizontal -> Vertical -> ArrowTempData -> Maybe Arrow
 createIncomingArrow attrs mHorizontalFrom mVerticalFrom horizontal vertical arrowTempData =
     let
-        f h v =
+        f h _ =
             Arrow.create attrs h vertical.arrowInStart horizontal vertical.start arrowTempData
     in
     Maybe.map2 f mHorizontalFrom mVerticalFrom
@@ -108,7 +108,7 @@ createIncomingArrow attrs mHorizontalFrom mVerticalFrom horizontal vertical arro
 createOutgoingArrow : List Attribute -> Horizontal -> Vertical -> Maybe Horizontal -> Maybe Vertical -> ArrowTempData -> Maybe Arrow
 createOutgoingArrow attrs horizontal vertical mHorizontalFrom mVerticalFrom arrowTempData =
     let
-        f h v =
+        f h _ =
             Arrow.create attrs horizontal vertical.end h vertical.arrowOutEnd arrowTempData
     in
     Maybe.map2 f mHorizontalFrom mVerticalFrom

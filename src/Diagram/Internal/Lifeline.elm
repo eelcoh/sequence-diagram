@@ -33,7 +33,7 @@ lookUp lifelines (LifelineIdx l) =
 
 
 isParticipant : Identifier -> Lifeline -> Bool
-isParticipant identifier { participant, layers } =
+isParticipant identifier { participant } =
     getParticipantId participant
         |> equalIdentifier identifier
 
@@ -43,17 +43,12 @@ equalIdentifier (Identifier id1) (Identifier id2) =
     id1 == id2
 
 
-equalLifelineIdx : LifelineIdx -> LifelineIdx -> Bool
-equalLifelineIdx (LifelineIdx l1) (LifelineIdx l2) =
-    l1 == l2
-
-
 getParticipantId : Participant -> Identifier
 getParticipantId (Participant cId _) =
     cId
 
 
-update : List Lifeline -> LifelineIdx -> Lifeline ->  (List Lifeline)
+update : List Lifeline -> LifelineIdx -> Lifeline -> List Lifeline
 update lifelines (LifelineIdx l) lifeline_ =
     setAt l lifeline_ lifelines
 

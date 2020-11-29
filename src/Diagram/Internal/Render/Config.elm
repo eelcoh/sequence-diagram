@@ -26,7 +26,7 @@ default =
 
 
 size : Config -> Size -> Int -> Int -> Config
-size conf sz numParticipants sessionsHeight =
+size conf sz numParticipants _ =
     let
         unitH =
             sz.width
@@ -38,9 +38,6 @@ size conf sz numParticipants sessionsHeight =
 
         width =
             5 * unitH
-
-        yFactor =
-            toFloat sz.height / toFloat sessionsHeight
 
         unitV =
             1.6 * unitH
